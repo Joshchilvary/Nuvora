@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import Button from "../ui/Button.jsx";
 import Badge from "../ui/Badge.jsx";
 
 export default function ProductCard({
+  id,
   image,
   title,
   price,
@@ -14,6 +16,14 @@ export default function ProductCard({
 
   return (
     <article className="group relative overflow-hidden rounded-2xl bg-surface shadow-sm ring-1 ring-outline-variant/20 transition-shadow hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+      {id ? (
+        <Link
+          to={`/product/${id}`}
+          className="absolute inset-0 z-[1]"
+          aria-label={`View ${title}`}
+        />
+      ) : null}
+
       <div className="relative h-64 overflow-hidden bg-deep-surface">
         {image ? (
           <img
@@ -29,7 +39,7 @@ export default function ProductCard({
         )}
         <button
           onClick={() => setFavorite((prev) => !prev)}
-          className={`absolute right-4 top-4 flex items-center justify-center rounded-full bg-deep-surface/70 p-2 backdrop-blur-sm transition-colors ${
+          className={`absolute right-4 top-4 z-10 flex items-center justify-center rounded-full bg-deep-surface/70 p-2 backdrop-blur-sm transition-colors ${
             favorite ? "text-accent" : "text-text-muted hover:text-accent"
           }`}
           aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
@@ -59,7 +69,11 @@ export default function ProductCard({
             <Badge variant="lime">{badge}</Badge>
           </div>
         ) : null}
-        <Button variant="outline" className="w-full" onClick={onAddToCart}>
+        <Button
+          variant="outline"
+          className="relative z-10 w-full"
+          onClick={onAddToCart}
+        >
           Add to Cart
         </Button>
       </div>

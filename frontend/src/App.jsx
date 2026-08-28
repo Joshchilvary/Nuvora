@@ -4,6 +4,7 @@ import PublicLayout from "./components/layout/PublicLayout.jsx";
 import Home from "./pages/Home.jsx";
 import Marketplace from "./pages/Marketplace.jsx";
 import Discover from "./pages/Discover.jsx";
+import ProductDetails from "./pages/ProductDetails.jsx";
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/discover" element={<Discover />} />
+        <Route path="/product/:productId" element={<ProductDetails />} />
       </Route>
     </Routes>
   );
