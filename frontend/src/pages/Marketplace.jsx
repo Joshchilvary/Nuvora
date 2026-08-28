@@ -3,12 +3,14 @@ import FilterSidebar from "../components/marketplace/FilterSidebar.jsx";
 import SearchBar from "../components/marketplace/SearchBar.jsx";
 import ProductGrid from "../components/marketplace/ProductGrid.jsx";
 import { PRODUCTS } from "../data/products.js";
+import { useCart } from "../context/CartContext.jsx";
 
 export default function Marketplace() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All Products");
   const [maxPrice, setMaxPrice] = useState(1000);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const { addItem } = useCart();
 
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -82,7 +84,10 @@ export default function Marketplace() {
           </div>
         ) : null}
 
-        <ProductGrid products={filtered} />
+        <ProductGrid
+          products={filtered}
+          onAddToCart={(product) => addItem(product, 1)}
+        />
       </div>
     </div>
   );

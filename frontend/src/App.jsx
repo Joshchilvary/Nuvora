@@ -5,6 +5,7 @@ import Home from "./pages/Home.jsx";
 import Marketplace from "./pages/Marketplace.jsx";
 import Discover from "./pages/Discover.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
+import Cart from "./pages/Cart.jsx";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/discover" element={<Discover />} />
         <Route path="/product/:productId" element={<ProductDetails />} />
+        <Route path="/cart" element={<Cart />} />
       </Route>
     </Routes>
   );

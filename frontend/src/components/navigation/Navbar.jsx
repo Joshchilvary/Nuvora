@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import Button from "../ui/Button.jsx";
 import Container from "../layout/Container.jsx";
 import MobileMenu from "./MobileMenu.jsx";
 import { useTheme } from "../../context/ThemeContext.jsx";
+import { useCart } from "../../context/CartContext.jsx";
 
 const LINKS = [
   { label: "Market", to: "/marketplace" },
@@ -23,6 +24,7 @@ function navLinkClass({ isActive }) {
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { totalItems } = useCart();
 
   return (
     <header className="fixed left-0 right-0 top-0 z-50 mt-4 px-4 md:mt-6 md:px-8">
@@ -61,6 +63,19 @@ export default function Navbar() {
               {theme === "dark" ? "light_mode" : "dark_mode"}
             </span>
           </button>
+
+          <Link
+            to="/cart"
+            className="relative text-text-muted transition-colors hover:text-accent"
+            aria-label="Shopping cart"
+          >
+            <span className="material-symbols text-[24px]">shopping_cart</span>
+            {totalItems > 0 && (
+              <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-lime text-[10px] font-bold text-obsidian">
+                {totalItems}
+              </span>
+            )}
+          </Link>
 
           <Button size="sm" className="hidden md:inline-flex">
             Account

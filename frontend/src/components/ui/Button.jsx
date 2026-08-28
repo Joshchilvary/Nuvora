@@ -5,7 +5,7 @@ const VARIANTS = {
   secondary:
     "bg-surface-elevated text-text-primary hover:bg-surface-high focus-visible:ring-outline/50",
   outline:
-    "bg-transparent text-text-primary border border-outline-variant/40 hover:bg-surface-elevated focus-visible:ring-outline/50",
+    "bg-transparent text-text-primary border border-outline-variant/40 hover:bg-obsidian hover:text-white dark:hover:bg-surface-highest dark:hover:text-text-primary focus-visible:ring-outline/50",
   ghost:
     "bg-transparent text-text-muted hover:text-text-primary hover:bg-surface-elevated focus-visible:ring-outline/40",
 };

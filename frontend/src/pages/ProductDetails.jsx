@@ -4,6 +4,7 @@ import Badge from "../components/ui/Badge.jsx";
 import Button from "../components/ui/Button.jsx";
 import ProductCard from "../components/product/ProductCard.jsx";
 import { getProductById, getRelatedProducts } from "../services/products.js";
+import { useCart } from "../context/CartContext.jsx";
 
 function QuantityStepper({ value, onChange }) {
   return (
@@ -38,6 +39,7 @@ export default function ProductDetails() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
+  const { addItem } = useCart();
 
   const handleBack = () => {
     if (location.key === "default") {
@@ -176,7 +178,10 @@ export default function ProductDetails() {
 
           <div className="mb-12 flex flex-wrap items-center gap-4">
             <QuantityStepper value={quantity} onChange={setQuantity} />
-            <Button className="flex-1 rounded-xl px-8 py-4">
+            <Button
+              className="flex-1 rounded-xl px-8 py-4"
+              onClick={() => addItem(product, quantity)}
+            >
               Add to Cart
             </Button>
             <button
