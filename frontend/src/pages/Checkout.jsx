@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
 import Button from "../components/ui/Button.jsx";
+import { buildOrder, saveLastOrder } from "../lib/order.js";
 
 const DELIVERY_OPTIONS = [
   {
@@ -97,7 +98,7 @@ function CheckoutSummary({ subtotal, shipping, total, items }) {
 }
 
 export default function Checkout() {
-  const { items, subtotal } = useCart();
+  const { items, subtotal, clear } = useCart();
   const navigate = useNavigate();
   const [deliveryId, setDeliveryId] = useState("express");
   const [errors, setErrors] = useState({});
@@ -167,7 +168,19 @@ export default function Checkout() {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!validate()) return;
-    navigate("/order-confirmed");
+    const delivery = DELIVERY_OPTIONS.find((o) => o.id === deliveryId);
+    const order = buildOrder({
+      items,
+      subtotal,
+      shipping,
+      total,
+      deliveryId,
+      delivery,
+      form,
+    });
+    saveLastOrder(order);
+    clear();
+    navigate("/order-confirmed", { state: { order } });
   };
 
   const update = (field) => (event) => {
