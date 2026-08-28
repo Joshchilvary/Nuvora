@@ -8,7 +8,7 @@ import { useTheme } from "../../context/ThemeContext.jsx";
 const LINKS = [
   { label: "Market", to: "/marketplace" },
   { label: "Sellers", to: "/sellers" },
-  { label: "Discover", to: "/" },
+  { label: "Discover", to: "/discover" },
   { label: "Support", to: "/support" },
 ];
 
