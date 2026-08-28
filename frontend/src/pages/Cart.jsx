@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
 import Button from "../components/ui/Button.jsx";
 
@@ -101,10 +101,12 @@ function OrderSummary({ subtotal, total }) {
       </div>
 
       <div className="mt-6 flex flex-col gap-4">
-        <Button className="w-full py-4">
-          Proceed to Checkout
-          <span className="material-symbols text-[20px]">arrow_forward</span>
-        </Button>
+        <Link to="/checkout">
+          <Button className="w-full py-4">
+            Proceed to Checkout
+            <span className="material-symbols text-[20px]">arrow_forward</span>
+          </Button>
+        </Link>
         <div className="flex items-center justify-center gap-2 text-text-muted text-sm">
           <span className="material-symbols text-[16px]">lock</span>
           Secure encrypted checkout
