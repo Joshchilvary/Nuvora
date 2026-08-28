@@ -1,7 +1,9 @@
 import React from "react";
 import Container from "./Container.jsx";
+import { Link } from "react-router-dom";
 
 const LINKS = [
+  { label: "About", href: "/our-story" },
   { label: "Privacy", href: "#" },
   { label: "Terms", href: "#" },
   { label: "API", href: "#" },
@@ -21,15 +23,25 @@ export default function Footer() {
           </p>
         </div>
         <nav className="flex gap-8 text-sm">
-          {LINKS.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="text-text-muted transition-colors hover:text-accent"
-            >
-              {link.label}
-            </a>
-          ))}
+          {LINKS.map((link) =>
+            link.href.startsWith("/") ? (
+              <Link
+                key={link.label}
+                to={link.href}
+                className="text-text-muted transition-colors hover:text-accent"
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <a
+                key={link.label}
+                href={link.href}
+                className="text-text-muted transition-colors hover:text-accent"
+              >
+                {link.label}
+              </a>
+            )
+          )}
         </nav>
       </Container>
     </footer>
