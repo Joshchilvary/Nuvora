@@ -25,7 +25,7 @@ export default function ProductCard({
           </div>
         )}
         <button
-          className="absolute right-4 top-4 flex items-center justify-center rounded-full bg-obsidian/70 p-2 text-text-muted backdrop-blur-sm transition-colors hover:text-lime"
+          className="absolute right-4 top-4 flex items-center justify-center rounded-full bg-obsidian/70 p-2 text-text-muted backdrop-blur-sm transition-colors hover:text-accent"
           aria-label="Add to favorites"
         >
           <span className="material-symbols text-[20px]">favorite</span>

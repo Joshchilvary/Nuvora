@@ -13,7 +13,7 @@ export default function Footer() {
     <footer className="mt-20 w-full border-t border-outline-variant/30 bg-deep-surface py-12">
       <Container className="flex flex-col items-center justify-between gap-6 md:flex-row">
         <div>
-          <span className="font-display text-xl font-bold tracking-tight text-lime">
+          <span className="font-display text-xl font-bold tracking-tight text-accent">
             NUVORA
           </span>
           <p className="mt-2 text-sm text-text-muted opacity-80">
@@ -25,7 +25,7 @@ export default function Footer() {
             <a
               key={link.label}
               href={link.href}
-              className="text-text-muted transition-colors hover:text-lime"
+              className="text-text-muted transition-colors hover:text-accent"
             >
               {link.label}
             </a>

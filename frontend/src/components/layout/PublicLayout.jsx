@@ -6,7 +6,7 @@ import Container from "./Container.jsx";
 
 export default function PublicLayout() {
   return (
-    <div className="flex min-h-full flex-col bg-obsidian">
+    <div className="flex min-h-full flex-col bg-background">
       <Navbar />
       <main className="flex-1 pt-28">
         <Container>

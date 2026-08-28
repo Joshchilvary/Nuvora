@@ -1,14 +1,16 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import Button from "../ui/Button.jsx";
+import { useTheme } from "../../context/ThemeContext.jsx";
 
 function navLinkClass({ isActive }) {
   return `block py-3 font-semibold transition-colors ${
-    isActive ? "text-lime" : "text-text-primary hover:text-lime"
+    isActive ? "text-accent" : "text-text-primary hover:text-accent"
   }`;
 }
 
 export default function MobileMenu({ open, onClose, links }) {
+  const { theme, toggleTheme } = useTheme();
   return (
     <div
       className={`fixed inset-0 z-[60] md:hidden ${open ? "" : "pointer-events-none"}`}
@@ -28,16 +30,27 @@ export default function MobileMenu({ open, onClose, links }) {
         aria-label="Mobile navigation"
       >
         <div className="mb-4 flex items-center justify-between">
-          <span className="font-display text-lg font-bold tracking-tight text-lime">
+          <span className="font-display text-lg font-bold tracking-tight text-accent">
             NUVORA
           </span>
-          <button
-            className="text-text-muted transition-colors hover:text-lime"
-            aria-label="Close menu"
-            onClick={onClose}
-          >
-            <span className="material-symbols text-[28px]">close</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="text-text-muted transition-colors hover:text-accent"
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              <span className="material-symbols text-[24px]">
+                {theme === "dark" ? "light_mode" : "dark_mode"}
+              </span>
+            </button>
+            <button
+              className="text-text-muted transition-colors hover:text-accent"
+              aria-label="Close menu"
+              onClick={onClose}
+            >
+              <span className="material-symbols text-[28px]">close</span>
+            </button>
+          </div>
         </div>
 
         <div className="mb-4 flex items-center rounded-full border border-outline-variant/30 bg-surface-low px-4 py-2">

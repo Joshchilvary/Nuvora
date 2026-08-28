@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import Button from "../ui/Button.jsx";
 import Container from "../layout/Container.jsx";
 import MobileMenu from "./MobileMenu.jsx";
+import { useTheme } from "../../context/ThemeContext.jsx";
 
 const LINKS = [
   { label: "Market", to: "/marketplace" },
@@ -14,20 +15,21 @@ const LINKS = [
 function navLinkClass({ isActive }) {
   return `font-semibold transition-colors duration-300 ${
     isActive
-      ? "text-lime border-b-2 border-lime"
-      : "text-text-muted hover:text-lime"
+      ? "text-accent border-b-2 border-lime"
+      : "text-text-muted hover:text-accent"
   }`;
 }
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="fixed left-0 right-0 top-0 z-50 mt-4 px-4 md:mt-6 md:px-8">
       <Container className="flex items-center justify-between gap-4 rounded-full border border-outline-variant/20 bg-surface/80 px-5 py-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] backdrop-blur-[28px]">
         <NavLink to="/" className="flex items-center gap-3">
-          <span className="material-symbols text-2xl text-lime">auto_awesome</span>
-          <span className="font-display text-xl font-bold tracking-tight text-lime">
+          <span className="material-symbols text-2xl text-accent">auto_awesome</span>
+          <span className="font-display text-xl font-bold tracking-tight text-accent">
             NUVORA
           </span>
         </NavLink>
@@ -51,10 +53,13 @@ export default function Navbar() {
           </div>
 
           <button
-            className="hidden text-text-muted transition-colors hover:text-lime md:block"
-            aria-label="Toggle theme"
+            onClick={toggleTheme}
+            className="hidden text-text-muted transition-colors hover:text-accent md:block"
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
           >
-            <span className="material-symbols text-[24px]">dark_mode</span>
+            <span className="material-symbols text-[24px]">
+              {theme === "dark" ? "light_mode" : "dark_mode"}
+            </span>
           </button>
 
           <Button size="sm" className="hidden md:inline-flex">
@@ -62,7 +67,7 @@ export default function Navbar() {
           </Button>
 
           <button
-            className="text-text-muted transition-colors hover:text-lime md:hidden"
+            className="text-text-muted transition-colors hover:text-accent md:hidden"
             aria-label="Open menu"
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen(true)}

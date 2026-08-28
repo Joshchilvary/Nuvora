@@ -2,11 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    color-scheme: dark;
-  }
+:root {
+  color-scheme: light;
 
+  --nuvora-background: 245 246 242; /* #F5F6F2 */
+  --nuvora-obsidian: 26 29 22; /* #1A1D16 ink on accent */
+  --nuvora-deep-surface: 232 234 226; /* #E8EAE2 */
+  --nuvora-surface: 255 255 255; /* #FFFFFF */
+  --nuvora-surface-low: 240 242 235; /* #F0F2EB */
+  --nuvora-surface-container: 238 240 233; /* #EEF0E9 */
+  --nuvora-surface-high: 230 233 224; /* #E6E9E0 */
+  --nuvora-surface-highest: 222 225 215; /* #DEE1D7 */
+  --nuvora-surface-elevated: 255 255 255; /* #FFFFFF */
+  --nuvora-lime: 184 243 74; /* #B8F34A */
+  --nuvora-lime-soft: 159 216 48; /* #9FD830 */
+  --nuvora-accent: 79 110 8; /* #4F6E08 readable lime on light */
+  --nuvora-on-surface: 26 29 22; /* #1A1D16 */
+  --nuvora-on-surface-variant: 90 95 78; /* #5A5F4E */
+  --nuvora-outline: 150 156 134; /* #969C86 */
+  --nuvora-outline-variant: 214 218 205; /* #D6DACD */
+}
+
+.dark {
+  color-scheme: dark;
+
+  --nuvora-background: 17 19 24; /* #111318 */
+  --nuvora-obsidian: 17 19 24; /* #111318 */
+  --nuvora-deep-surface: 12 14 19; /* #0C0E13 */
+  --nuvora-surface: 26 28 33; /* #1A1C21 */
+  --nuvora-surface-low: 22 24 29; /* #16181D */
+  --nuvora-surface-container: 30 32 37; /* #1E2025 */
+  --nuvora-surface-high: 34 37 43; /* #22252B */
+  --nuvora-surface-highest: 51 53 58; /* #33353A */
+  --nuvora-surface-elevated: 40 42 48; /* #282A30 */
+  --nuvora-lime: 184 243 74; /* #B8F34A */
+  --nuvora-lime-soft: 159 216 48; /* #9FD830 */
+  --nuvora-accent: 184 243 74; /* #B8F34A */
+  --nuvora-on-surface: 226 226 233; /* #E2E2E9 */
+  --nuvora-on-surface-variant: 195 201 176; /* #C3C9B0 */
+  --nuvora-outline: 141 147 124; /* #8D937C */
+  --nuvora-outline-variant: 67 73 54; /* #434936 */
+}
+
+@layer base {
   html,
   body,
   #root {
@@ -14,7 +52,7 @@
   }
 
   body {
-    @apply bg-obsidian text-text-primary font-sans antialiased;
+    @apply bg-background text-text-primary font-sans antialiased;
   }
 
   h1,
@@ -39,5 +77,36 @@
     direction: ltr;
     -webkit-font-feature-settings: "liga";
     -webkit-font-smoothing: antialiased;
+  }
+
+  .glass-panel {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .ai-glow {
+    box-shadow:
+      inset 0 0 0 2px rgba(184, 243, 74, 0.3),
+      0 0 20px rgba(184, 243, 74, 0.1);
+  }
+
+  .dim-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .dim-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      135deg,
+      rgb(var(--nuvora-on-surface)) 0%,
+      rgb(var(--nuvora-on-surface-variant)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }

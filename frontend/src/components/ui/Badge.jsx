@@ -2,8 +2,8 @@ import React from "react";
 
 const VARIANTS = {
   default: "bg-surface-elevated text-text-muted border-outline-variant/30",
-  lime: "bg-lime/15 text-lime border-lime/30",
-  success: "bg-lime/15 text-lime border-lime/30",
+  lime: "bg-lime/15 text-accent border-lime/30",
+  success: "bg-lime/15 text-accent border-lime/30",
   neutral: "bg-surface-high text-text-muted border-outline-variant/20",
 };
 
