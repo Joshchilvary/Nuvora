@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../ui/Button.jsx";
 import Badge from "../ui/Badge.jsx";
 
@@ -10,6 +10,8 @@ export default function ProductCard({
   badge,
   onAddToCart,
 }) {
+  const [favorite, setFavorite] = useState(false);
+
   return (
     <article className="group relative overflow-hidden rounded-2xl bg-surface shadow-sm ring-1 ring-outline-variant/20 transition-shadow hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
       <div className="relative h-64 overflow-hidden bg-deep-surface">
@@ -17,6 +19,7 @@ export default function ProductCard({
           <img
             src={image}
             alt={title}
+            loading="lazy"
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
@@ -25,10 +28,19 @@ export default function ProductCard({
           </div>
         )}
         <button
-          className="absolute right-4 top-4 flex items-center justify-center rounded-full bg-obsidian/70 p-2 text-text-muted backdrop-blur-sm transition-colors hover:text-accent"
-          aria-label="Add to favorites"
+          onClick={() => setFavorite((prev) => !prev)}
+          className={`absolute right-4 top-4 flex items-center justify-center rounded-full bg-deep-surface/70 p-2 backdrop-blur-sm transition-colors ${
+            favorite ? "text-accent" : "text-text-muted hover:text-accent"
+          }`}
+          aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+          aria-pressed={favorite}
         >
-          <span className="material-symbols text-[20px]">favorite</span>
+          <span
+            className="material-symbols text-[20px]"
+            style={{ fontVariationSettings: favorite ? "'FILL' 1" : "'FILL' 0" }}
+          >
+            favorite
+          </span>
         </button>
       </div>
 
