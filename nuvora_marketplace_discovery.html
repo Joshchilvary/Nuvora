@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NUVORA | Marketplace</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Sora:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "surface-container-lowest": "#0c0e13",
+                            "tertiary-container": "#e2e0da",
+                            "on-error-container": "#ffdad6",
+                            "surface": "#111318",
+                            "background": "#111318",
+                            "surface-bright": "#37393f",
+                            "tertiary-fixed-dim": "#c8c6c1",
+                            "on-tertiary-fixed-variant": "#474743",
+                            "secondary-fixed-dim": "#c7c6ca",
+                            "surface-tint": "#9fd830",
+                            "on-secondary-fixed-variant": "#46464a",
+                            "on-error": "#690005",
+                            "primary-fixed-dim": "#9fd830",
+                            "primary-fixed": "#baf54c",
+                            "on-tertiary": "#30312d",
+                            "tertiary": "#fffdf7",
+                            "inverse-on-surface": "#2e3036",
+                            "error": "#ffb4ab",
+                            "on-primary-fixed-variant": "#354e00",
+                            "surface-container-high": "#282a2f",
+                            "surface-variant": "#33353a",
+                            "secondary-fixed": "#e3e2e6",
+                            "on-primary": "#233600",
+                            "error-container": "#93000a",
+                            "inverse-surface": "#e2e2e9",
+                            "on-primary-container": "#4c6d00",
+                            "surface-container-low": "#1a1c21",
+                            "secondary-container": "#46464a",
+                            "inverse-primary": "#486800",
+                            "on-surface-variant": "#c3c9b0",
+                            "on-secondary-container": "#b5b4b9",
+                            "primary-container": "#b8f34a",
+                            "on-tertiary-container": "#63635f",
+                            "on-secondary-fixed": "#1b1b1f",
+                            "outline-variant": "#434936",
+                            "secondary": "#c7c6ca",
+                            "primary": "#fcffec",
+                            "on-tertiary-fixed": "#1b1c18",
+                            "surface-container-highest": "#33353a",
+                            "on-surface": "#e2e2e9",
+                            "on-background": "#e2e2e9",
+                            "on-secondary": "#2f3034",
+                            "outline": "#8d937c",
+                            "surface-dim": "#111318",
+                            "surface-container": "#1e2025",
+                            "tertiary-fixed": "#e4e2dd",
+                            "on-primary-fixed": "#131f00"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "container-max": "1440px",
+                            "gutter": "24px",
+                            "margin-desktop": "64px",
+                            "unit": "8px",
+                            "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                            "h4": ["Sora"],
+                            "h2": ["Sora"],
+                            "display": ["Sora"],
+                            "h1": ["Sora"],
+                            "h3": ["Sora"],
+                            "h1-mobile": ["Sora"],
+                            "body-lg": ["Manrope"],
+                            "label-sm": ["Manrope"],
+                            "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                            "h4": ["22px", {"lineHeight": "28px", "fontWeight": "500"}],
+                            "h2": ["40px", {"lineHeight": "48px", "fontWeight": "500"}],
+                            "display": ["72px", {"lineHeight": "80px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                            "h1": ["56px", {"lineHeight": "64px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                            "h3": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
+                            "h1-mobile": ["40px", {"lineHeight": "48px", "fontWeight": "600"}],
+                            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                            "label-sm": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom Styles for Dimensionality */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        .product-card {
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+        
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+        
+        .ai-glow {
+            box-shadow: inset 0 0 0 2px #baf54c, 0 0 15px rgba(186, 245, 76, 0.2);
+        }
+        
+        /* Overriding dark mode background for this specific light mode request */
+        body {
+            background-color: #F6F4EE; /* Warm ivory */
+            color: #1a1c21;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 py-3 bg-surface/80 backdrop-blur-[28px] border border-outline-variant/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-full max-w-7xl mx-auto mt-6 glass-panel" style="background: rgba(255, 255, 255, 0.85);">
+<div class="flex items-center gap-8">
+<a class="font-display text-h3 text-surface-container-lowest tracking-tight" href="#">NUVORA</a>
+<nav class="hidden md:flex gap-6">
+<a class="font-body-md text-body-md font-semibold text-primary-fixed font-bold border-b-2 border-primary-fixed pb-1" href="#">Market</a>
+<a class="font-body-md text-body-md font-semibold text-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Sellers</a>
+<a class="font-body-md text-body-md font-semibold text-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Discover</a>
+<a class="font-body-md text-body-md font-semibold text-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Support</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:flex items-center justify-center p-2 rounded-full hover:bg-surface-variant/10 transition-colors">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="hidden md:flex items-center justify-center p-2 rounded-full hover:bg-surface-variant/10 transition-colors">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+<button class="hidden md:flex items-center justify-center p-2 rounded-full hover:bg-surface-variant/10 transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="bg-surface-container-lowest text-tertiary px-6 py-2 rounded-full font-label-sm hover:scale-95 transition-transform duration-300">
+                Account
+            </button>
+</div>
+</header>
+<main class="flex-grow pt-[140px] px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Sidebar Filters -->
+<aside class="md:col-span-3 lg:col-span-3 hidden md:block">
+<div class="glass-panel p-6 rounded-xl sticky top-[140px]">
+<h3 class="font-h4 text-h4 mb-6">Filters</h3>
+<div class="space-y-6">
+<!-- Categories -->
+<div>
+<h4 class="font-label-sm text-label-sm text-surface-variant mb-3 uppercase tracking-wider">Category</h4>
+<ul class="space-y-2 font-body-md text-body-md">
+<li class="flex items-center justify-between text-primary-fixed-dim font-semibold bg-surface-container-lowest/5 p-2 rounded-lg">
+<span>All Products</span>
+<span class="material-symbols-outlined text-sm">check</span>
+</li>
+<li class="flex items-center justify-between hover:bg-surface-container-lowest/5 p-2 rounded-lg transition-colors cursor-pointer text-surface-variant">
+<span>Electronics</span>
+</li>
+<li class="flex items-center justify-between hover:bg-surface-container-lowest/5 p-2 rounded-lg transition-colors cursor-pointer text-surface-variant">
+<span>Fashion</span>
+</li>
+<li class="flex items-center justify-between hover:bg-surface-container-lowest/5 p-2 rounded-lg transition-colors cursor-pointer text-surface-variant">
+<span>Lifestyle</span>
+</li>
+</ul>
+</div>
+<div class="h-px bg-surface-variant/10 w-full"></div>
+<!-- Price Range -->
+<div>
+<h4 class="font-label-sm text-label-sm text-surface-variant mb-3 uppercase tracking-wider">Price</h4>
+<input class="w-full accent-primary-fixed-dim" max="1000" min="0" type="range"/>
+<div class="flex justify-between text-sm text-surface-variant mt-2">
+<span>$0</span>
+<span>$1000+</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="md:col-span-9 lg:col-span-9 flex flex-col gap-8">
+<!-- AI Search Bar -->
+<div class="glass-panel rounded-2xl p-2 flex items-center shadow-sm ai-glow">
+<span class="material-symbols-outlined p-3 text-surface-variant">auto_awesome</span>
+<input class="w-full bg-transparent border-none focus:ring-0 font-body-lg text-body-lg text-surface-container-lowest placeholder-surface-variant/70" placeholder="Describe what you're looking for..." type="text"/>
+<button class="bg-primary-container text-on-primary-container p-3 rounded-xl hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+<!-- Header -->
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-h1 text-h1-mobile md:text-h1 text-surface-container-lowest">Market</h1>
+<p class="font-body-lg text-body-lg text-surface-variant mt-2">Discover premium dimensional goods.</p>
+</div>
+<div class="hidden md:flex gap-2">
+<button class="p-2 border border-surface-variant/20 rounded-lg hover:bg-surface-variant/10"><span class="material-symbols-outlined">grid_view</span></button>
+<button class="p-2 border border-surface-variant/20 rounded-lg opacity-50"><span class="material-symbols-outlined">view_list</span></button>
+</div>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Product 1 -->
+<div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm relative group">
+<div class="h-64 overflow-hidden bg-surface-container-lowest/5 relative">
+<img class="w-full h-full object-cover product-img transition-transform duration-500" data-alt="A sleek, futuristic matte black wireless headphone resting on a pristine white marble pedestal. The lighting is soft and high-key, creating subtle gradients and highlights on the device's metallic accents. A faint lime green glow emanates from a tiny LED indicator, suggesting advanced AI capabilities. The background is a clean, modern studio setting with a warm ivory tone, embodying a premium, high-end tech lifestyle aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLlI33R92ejTTZzZm5W9Ti7989lPYWYDvNVp7BpInz6ruV7_FppNZgTbVa8gC6WH6mIjtcsoNl_7D5vpnBSpG3WPSKLgQm5X_L7VWTKQi-7z26Zo6lqEDNEYpkSkUqNEY7pHH2Wov_koW2GtXYPFXYaokZXNvWEEsRnK05vdHV5cUCvT6MVqPTzHNRTQTFIGEbg8-Pq9L5f-3DOBIMm1kG29fSjomjpM5MtNtmCBpb4UxYYweBUMCxQg"/>
+<button class="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-h4 text-h4 text-surface-container-lowest line-clamp-1">Sonic Prism Over-Ear</h3>
+<span class="font-label-sm text-label-sm font-bold bg-surface-container-lowest/5 px-2 py-1 rounded">$349</span>
+</div>
+<p class="font-body-md text-body-md text-surface-variant mb-4 line-clamp-2">Spatial audio headphones with adaptive noise cancellation and glass-touch controls.</p>
+<button class="w-full py-3 rounded-xl border border-surface-container-lowest/10 font-label-sm text-label-sm hover:bg-surface-container-lowest hover:text-tertiary transition-colors">Add to Cart</button>
+</div>
+</div>
+<!-- Product 2 -->
+<div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm relative group">
+<div class="h-64 overflow-hidden bg-surface-container-lowest/5 relative">
+<img class="w-full h-full object-cover product-img transition-transform duration-500" data-alt="A meticulously crafted mechanical keyboard with semi-transparent keycaps, sitting on a warm walnut wood desk. Soft, natural light spills across the surface, highlighting the subtle textures of the materials. The keyboard features a minimalist design with brushed aluminum edges and a very faint, elegant lime accent on the escape key. The overall mood is sophisticated, tactile, and professional, perfect for a modern office setup." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5EiF94VagvS2cYeWjO5I6xdHzp9RIvwOhOIrJJNAFb1nEGlP0hJyhDrZD1Tj1pnsjMP5q2xCbcidsdFu5osb7sZb30i60oXGBxXseECwPQRIIP0_TkOTDx_PdwUZzmIencE4MKSVxjQZVJmc-aP0d7D2hfFEw0IqdYwnSLPKaLKjlO4Da4rXMSEwXHx91QG4Q2LETM5dcy2NH_0_7q8W0wWUoY3EheCzbX683GLRUQakztXPPae_B_w"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-h4 text-h4 text-surface-container-lowest line-clamp-1">Tactile Flow Keyboard</h3>
+<span class="font-label-sm text-label-sm font-bold bg-surface-container-lowest/5 px-2 py-1 rounded">$189</span>
+</div>
+<p class="font-body-md text-body-md text-surface-variant mb-4 line-clamp-2">Low-profile mechanical switches housed in an aerospace-grade aluminum chassis.</p>
+<button class="w-full py-3 rounded-xl border border-surface-container-lowest/10 font-label-sm text-label-sm hover:bg-surface-container-lowest hover:text-tertiary transition-colors">Add to Cart</button>
+</div>
+</div>
+<!-- Product 3 -->
+<div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm relative group">
+<div class="h-64 overflow-hidden bg-surface-container-lowest/5 relative">
+<img class="w-full h-full object-cover product-img transition-transform duration-500" data-alt="A minimalist, geometric ceramic vase holding a single architectural dried branch. The vase is matte ivory white and sits on a slightly reflective glass surface against a pale, warm beige backdrop. The lighting casts long, dramatic, yet soft shadows, emphasizing depth and spatial relationships. The composition is highly editorial, calm, and exudes a premium lifestyle aesthetic with a focus on form and subtle texture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDALf5YcN0yJuWhUncKomNfU-jC28sQzp3oDzdrAKi6SoX0d4aDudf_XTZ89YkqxfJOQYR9fqrntvkgWTMO2pjo6iVWXPkCdR9yG5W-9F0zXZPvVI_AGsKfZrnglHmB-hG8fHo-lJY3-Yf7WmfEqrq7knjAmdyaSQaPDYVlCyR1SzVwQvKRVmWdIr0t_8ExOef3g4ztEbKIwn3EUFzxJPEn_9ZGgZw_3dx8M0n9AyvY5kohsSc9RGmjqA"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-h4 text-h4 text-surface-container-lowest line-clamp-1">Monolith Vessel</h3>
+<span class="font-label-sm text-label-sm font-bold bg-surface-container-lowest/5 px-2 py-1 rounded">$85</span>
+</div>
+<p class="font-body-md text-body-md text-surface-variant mb-4 line-clamp-2">Hand-cast ceramic statement piece designed to elevate any modern living space.</p>
+<button class="w-full py-3 rounded-xl border border-surface-container-lowest/10 font-label-sm text-label-sm hover:bg-surface-container-lowest hover:text-tertiary transition-colors">Add to Cart</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest w-full py-12 px-margin-desktop mt-20 flex flex-col md:flex-row justify-between items-center text-on-surface">
+<div class="font-display text-h3 text-primary-fixed mb-6 md:mb-0">
+            NUVORA
+        </div>
+<div class="font-body-md text-body-md text-on-surface-variant opacity-80 mb-6 md:mb-0">
+            © 2024 NUVORA. Dimensional Discovery.
+        </div>
+<nav class="flex gap-6 font-body-md text-body-md">
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">API</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Careers</a>
+</nav>
+</footer>
+</body></html>

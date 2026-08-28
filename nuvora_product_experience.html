@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NUVORA | Product Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&amp;family=Sora:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#0c0e13",
+                        "tertiary-container": "#e2e0da",
+                        "on-error-container": "#ffdad6",
+                        "surface": "#111318",
+                        "background": "#111318",
+                        "surface-bright": "#37393f",
+                        "tertiary-fixed-dim": "#c8c6c1",
+                        "on-tertiary-fixed-variant": "#474743",
+                        "secondary-fixed-dim": "#c7c6ca",
+                        "surface-tint": "#9fd830",
+                        "on-secondary-fixed-variant": "#46464a",
+                        "on-error": "#690005",
+                        "primary-fixed-dim": "#9fd830",
+                        "primary-fixed": "#baf54c",
+                        "on-tertiary": "#30312d",
+                        "tertiary": "#fffdf7",
+                        "inverse-on-surface": "#2e3036",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#354e00",
+                        "surface-container-high": "#282a2f",
+                        "surface-variant": "#33353a",
+                        "secondary-fixed": "#e3e2e6",
+                        "on-primary": "#233600",
+                        "error-container": "#93000a",
+                        "inverse-surface": "#e2e2e9",
+                        "on-primary-container": "#4c6d00",
+                        "surface-container-low": "#1a1c21",
+                        "secondary-container": "#46464a",
+                        "inverse-primary": "#486800",
+                        "on-surface-variant": "#c3c9b0",
+                        "on-secondary-container": "#b5b4b9",
+                        "primary-container": "#b8f34a",
+                        "on-tertiary-container": "#63635f",
+                        "on-secondary-fixed": "#1b1b1f",
+                        "outline-variant": "#434936",
+                        "secondary": "#c7c6ca",
+                        "primary": "#fcffec",
+                        "on-tertiary-fixed": "#1b1c18",
+                        "surface-container-highest": "#33353a",
+                        "on-surface": "#e2e2e9",
+                        "on-background": "#e2e2e9",
+                        "on-secondary": "#2f3034",
+                        "outline": "#8d937c",
+                        "surface-dim": "#111318",
+                        "surface-container": "#1e2025",
+                        "tertiary-fixed": "#e4e2dd",
+                        "on-primary-fixed": "#131f00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "gutter": "24px",
+                        "margin-desktop": "64px",
+                        "unit": "8px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "h4": ["Sora"],
+                        "h2": ["Sora"],
+                        "display": ["Sora"],
+                        "h1": ["Sora"],
+                        "h3": ["Sora"],
+                        "h1-mobile": ["Sora"],
+                        "body-lg": ["Manrope"],
+                        "label-sm": ["Manrope"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "h4": ["22px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "h2": ["40px", { "lineHeight": "48px", "fontWeight": "500" }],
+                        "display": ["72px", { "lineHeight": "80px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "h1": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "h3": ["28px", { "lineHeight": "36px", "fontWeight": "500" }],
+                        "h1-mobile": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        .glass-panel {
+            background: rgba(26, 28, 33, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(141, 147, 124, 0.1);
+        }
+        .ai-glow {
+            box-shadow: inset 0 0 10px rgba(184, 243, 74, 0.15), 0 0 20px rgba(184, 243, 74, 0.05);
+        }
+        .dimensional-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+        .product-hero-image {
+            filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.6));
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+<!-- Top Navigation Placeholder -->
+<!-- The instruction mentions injecting {{DATA:COMPONENTS:COMPONENTS_3:TopNavBar}}, but I must construct it since I am outputting raw HTML.
+         I will skip rendering the literal placeholder and build a navigation shell that mimics a product details context. 
+         However, the system instructions say "Output a design in a single page using the predicted components above as guidance".
+         I will use the TopNavBar JSON definition to build it. -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 py-3 bg-surface/80 backdrop-blur-[28px] border border-outline-variant/20 rounded-full max-w-7xl mx-auto mt-6 shadow-[0_20px_50px_rgba(0,0,0,0.3)] hidden md:flex">
+<div class="font-display text-h3 text-primary-fixed-dim tracking-tight">NUVORA</div>
+<ul class="flex gap-8 items-center">
+<li><a class="font-body-md text-body-md font-semibold text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Market</a></li>
+<li><a class="font-body-md text-body-md font-semibold text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Sellers</a></li>
+<li><a class="font-body-md text-body-md font-semibold text-primary-fixed font-bold border-b-2 border-primary-fixed hover:text-primary-fixed transition-colors duration-300" href="#">Discover</a></li> <!-- Discover active for product details -->
+<li><a class="font-body-md text-body-md font-semibold text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Support</a></li>
+</ul>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary-fixed transition-colors" data-icon="search">search</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary-fixed transition-colors" data-icon="dark_mode">dark_mode</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary-fixed transition-colors" data-icon="notifications">notifications</span>
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden border border-outline-variant/30">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A macro photography style portrait of a sleek, abstract metallic sculpture serving as an avatar. The lighting is dramatic and cinematic, with strong contrasts emphasizing the polished curves against a deep obsidian background. Cool, high-tech corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtYZKQfPQOGWd3yxxwFh0wQeEoIbuv6NMIO8ehXOLoDHelA0d24MwrXcKxglcvDNondjlIRkxxjlJUWDa5PamDEjhOFbZQE0_h2q0sSkOfcJxhjAbBFppMIglRsiqgJSga1AnAfUNh9sqz0mugjvlzO4nwDXBSl62EE-mL7pkdLPKq7_aYQrQSul0Wce4I-pIpHcXvqvSgV9W6unnc4jRT0G3hcdm0UEk-rONYz7Tpl_xOVdXcns7SVA"/>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+<!-- Product Hero & Details -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-gutter items-center mb-32">
+<!-- Image Gallery (Left) -->
+<div class="lg:col-span-7 relative h-[600px] flex items-center justify-center rounded-2xl glass-panel overflow-visible">
+<div class="absolute inset-0 bg-gradient-to-br from-surface-container-high/30 to-surface-container-lowest/50 rounded-2xl -z-10"></div>
+<img alt="Premium Headphones" class="product-hero-image w-[110%] max-w-[800px] object-contain transform -translate-y-8 z-10" data-alt="A highly detailed, professional product photography shot of premium, futuristic over-ear headphones floating in mid-air. The headphones are constructed from matte obsidian materials with subtle glowing lime green accents. The background is a deep, atmospheric dark void with soft, volumetric lighting highlighting the sleek curves and high-end texture of the product. The composition implies depth and advanced technology." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAL19BaSo5CzvdQdTsYj7e_vgWKL54fn7vUq2veBFybo3r0ddQXMTuXOelLNmCxTi2UxQm1nhbiDgyDLrhzN2IlMsJz0j8TEBr4-TKQHUxXceiYfLUhVzub-yiLLCLAw9AMW0FXNikeNA17X0pQWTbNMka352KnMGuyrxdvjByDo5teBY4_SJo9OrqSgYqwvIBDaDYEISBfX8uj36gA2RVrU9Xy3TG46XXSDlTp0mHc0LwNiWEeOb1dA"/>
+<!-- Gallery Thumbnails -->
+<div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4 z-20">
+<div class="w-16 h-16 rounded-lg bg-surface border-2 border-primary-fixed overflow-hidden cursor-pointer">
+<img alt="Thumbnail 1" class="w-full h-full object-cover opacity-80 hover:opacity-100" data-alt="A detailed close-up shot of the futuristic headphones showing the texture of the ear pad and the matte finish of the outer shell. High-key dramatic lighting on a dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3-jW4NPllhRCOGypBWaIKrqU6QGpGeFExCRYRCg3p_zLFhcNFdyAy_K1hL6TZeOP0ZmESJd7Y8KRMXjXZ0HFOApMTRFzW5RrPBoTTQBhh5I1vZYQjF_WwCgpjXkaDKemJ9xpXI11th4yiVPTWpPr5cm6B-wo6LPS8ZvKCFfcViY90NPDjEtU-U-tgTQryj7jwUW3M_GrV5JlZgyFBnW6CQ8CWBg0nd7p7W6YTUZ-SzG3OJzIPmCEinQ"/>
+</div>
+<div class="w-16 h-16 rounded-lg bg-surface border border-outline-variant/30 overflow-hidden cursor-pointer hover:border-primary-fixed/50 transition-colors">
+<img alt="Thumbnail 2" class="w-full h-full object-cover opacity-60 hover:opacity-100" data-alt="A dynamic angle shot of the premium headphones showing the metallic hinge mechanism and sleek headband design. Dark, sophisticated lighting emphasizing the premium build quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrvflOS3amtLXAaafLhY0CoiBPc5l1QYbDxGzfD0cTSC4HiEJaqoQlRZ1euVMWAzFTP_-RTzMhKEZfD116jzalp9TpP-6QjDHNCczcao-KuVTJRcbnOBlgBGHcxv6eboqVoD3zQnlukHhD-ucQghnqdMNeIuzTkFSENL4kgWq5tLmBiVqz3oQ1-wfNVP0cYbHABUvLaRFEOntcfQ74tJyLsiFVTzy2zojEp5zLrmFPZGbhRhmqj1WF2w"/>
+</div>
+<div class="w-16 h-16 rounded-lg bg-surface border border-outline-variant/30 overflow-hidden cursor-pointer hover:border-primary-fixed/50 transition-colors">
+<img alt="Thumbnail 3" class="w-full h-full object-cover opacity-60 hover:opacity-100" data-alt="A macro shot of the glowing lime green status indicator light on the side of the matte black headphones. The focus is incredibly sharp on the glowing element, with the rest falling off into a soft bokeh." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrDc1euXqZYRltxNh7tXPAdJgrzuFBelJshp1S83mSheSWkcF7PFXLWUJmykhPxj3Vd_zCLSxK5E9VgVdWXANZ7UGeC14vp4axlkjIzzTBwtAKC8kxx7MFPX9LiBxaSKYUI9BI-6UJ4N_cHp10Yle6h4ZPEaJuFRPr0HSkVXhb42r6Mz9KTeKTLbyo1DqOpIr78wsX0aC4sU6FNGtbonvRw7HVSUpVQZ-7_VixNe0lHStXHbrKLsxOKQ"/>
+</div>
+</div>
+</div>
+<!-- Product Info (Right) -->
+<div class="lg:col-span-5 flex flex-col justify-center">
+<div class="mb-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/10 border border-primary-fixed/20 text-primary-fixed font-label-sm text-label-sm w-fit">
+<span class="material-symbols-outlined text-[16px]" data-icon="check_circle">check_circle</span>
+                    In Stock
+                </div>
+<h1 class="font-h1 text-h1 text-on-surface mb-4">NUVORA Aether Pro</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8">
+                    Experience dimensional audio with unparalleled clarity. The Aether Pro utilizes advanced neural processing to adapt acoustic profiles in real-time, delivering a soundstage that feels infinitely vast yet intimately precise.
+                </p>
+<div class="flex items-end gap-4 mb-10">
+<span class="font-display text-h2 text-primary-fixed">$499.00</span>
+<span class="font-body-md text-body-md text-on-surface-variant line-through pb-1">$599.00</span>
+</div>
+<div class="flex gap-4 mb-12">
+<button class="flex-1 bg-primary-container text-on-primary-fixed font-label-sm text-label-sm py-4 rounded-lg hover:bg-primary-fixed transition-colors text-center font-bold tracking-wide">
+                        Add to Cart
+                    </button>
+<button class="w-14 h-14 rounded-lg glass-panel flex items-center justify-center text-on-surface hover:text-primary-fixed transition-colors">
+<span class="material-symbols-outlined" data-icon="favorite_border">favorite_border</span>
+</button>
+</div>
+<!-- Specifications Minimal -->
+<div class="grid grid-cols-2 gap-y-6 gap-x-4 pt-8 border-t border-outline-variant/20">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1">Battery Life</div>
+<div class="font-body-md text-body-md text-on-surface">Up to 48 Hours</div>
+</div>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1">Connectivity</div>
+<div class="font-body-md text-body-md text-on-surface">Neural Link 2.0</div>
+</div>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1">Weight</div>
+<div class="font-body-md text-body-md text-on-surface">245 grams</div>
+</div>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1">Noise Cancellation</div>
+<div class="font-body-md text-body-md text-on-surface">Adaptive Active</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Ask NUVORA AI Widget -->
+<section class="mb-32">
+<div class="glass-panel rounded-2xl p-8 ai-glow relative overflow-hidden">
+<!-- Subtle decorative background element -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-fixed/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex flex-col md:flex-row gap-8 items-start md:items-center">
+<div class="w-16 h-16 rounded-full bg-surface-container-high border border-primary-fixed/30 flex items-center justify-center flex-shrink-0 relative">
+<span class="material-symbols-outlined text-primary-fixed text-3xl" data-icon="smart_toy">smart_toy</span>
+<div class="absolute inset-0 rounded-full border border-primary-fixed animate-ping opacity-20"></div>
+</div>
+<div class="flex-grow">
+<h3 class="font-h3 text-h3 text-on-surface mb-2">Ask NUVORA</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Have questions about compatibility, features, or setup? Our AI assistant knows everything about the Aether Pro.</p>
+<div class="relative w-full max-w-2xl">
+<input class="w-full bg-surface-dim border border-outline-variant/50 rounded-lg py-4 pl-4 pr-12 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary-fixed focus:ring-1 focus:ring-primary-fixed/50 transition-all placeholder-on-surface-variant/50" placeholder="e.g., How does the neural processing improve bass response?" type="text"/>
+<button class="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center text-primary-fixed hover:bg-surface-container rounded-md transition-colors">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- More Like This -->
+<section>
+<div class="flex justify-between items-end mb-8 border-b border-outline-variant/20 pb-4">
+<h2 class="font-h2 text-h2 text-on-surface">Related Discoveries</h2>
+<a class="font-label-sm text-label-sm text-primary-fixed hover:underline flex items-center gap-1" href="#">
+                    View All <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="glass-panel rounded-xl overflow-hidden dimensional-card transition-all duration-300 flex flex-col h-full group cursor-pointer">
+<div class="h-48 relative overflow-hidden bg-surface-container-low flex items-center justify-center p-4">
+<img alt="Audio Player" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" data-alt="A sleek, minimalist digital audio player device sitting on a matte dark surface. The device features a seamless glass front and brushed obsidian metal casing with tiny, precise lime green accents. Professional studio lighting highlights the sharp edges and premium materials against a deep black background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATnoA0cfKrjPBPcP7cQ6l3zyz9qrKhQMNcg8lPtFlpGNhDXT1DTgyRRYC4YqHdgaPFhucJUzIhjMTNPjBkHbB1wEmP8ZpPnKW8epMiZescCzNT9P8f9PfvHd62HYpbse9_TWhRW7agsfAsKKZCPpPjbDNwJfJ8WN8GLJmzjSe-OrF6eGF-FzxWg05X8zTEb9dgog-gtAhVd7TYAzKRH0B7z7ZSk4mP02HAVUVcc9hVyJBB4VnNI6_Jbw"/>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<h4 class="font-h4 text-h4 text-on-surface mb-2">Sonic Core DAC</h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-4 flex-grow">High-fidelity digital-to-analog converter for purists.</p>
+<div class="flex justify-between items-center mt-auto">
+<span class="font-h4 text-h4 text-primary-fixed-dim">$249</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed transition-colors" data-icon="add_circle">add_circle</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="glass-panel rounded-xl overflow-hidden dimensional-card transition-all duration-300 flex flex-col h-full group cursor-pointer">
+<div class="h-48 relative overflow-hidden bg-surface-container-low flex items-center justify-center p-4">
+<img alt="Charging Stand" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" data-alt="A futuristic charging stand designed for premium headphones. It is composed of dark, anodized metal with a heavy base and an angled arm. A subtle ring of lime green LED light illuminates the base. The setting is dark and cinematic, emphasizing the structural elegance of the accessory." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKFUIKNPgTwABF1UOCd4CCNfhP5VOrkHfYu3wms6sNcaKwAbpaYMZ0jbwG01YfkEfrI8oJmbcgLlLUqaP4kXEXdlgToksVOW2-L_NzLvvMv0PjaYYaAa9atBAMluXVuihbAuNrdMz4ufy29eiNitLZoWT3OjllvO5EIugQGSzgA4uMfEIflJJGx6BVUJ6iBsBk6VoJEOAs-Y7tp5W0WT5GNPMLdq-Bo6m040f1i7OWW5r2LEoKaKxalg"/>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<h4 class="font-h4 text-h4 text-on-surface mb-2">Aether Stand</h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-4 flex-grow">Inductive charging display stand crafted from aircraft aluminum.</p>
+<div class="flex justify-between items-center mt-auto">
+<span class="font-h4 text-h4 text-primary-fixed-dim">$89</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed transition-colors" data-icon="add_circle">add_circle</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="glass-panel rounded-xl overflow-hidden dimensional-card transition-all duration-300 flex flex-col h-full group cursor-pointer">
+<div class="h-48 relative overflow-hidden bg-surface-container-low flex items-center justify-center p-4">
+<img alt="Travel Case" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" data-alt="A compact, ruggedized hard case for carrying headphones. The outer shell has a sophisticated geometric texture in deep charcoal grey. The zipper is sealed and seamless. Subtle embossed branding. High contrast lighting emphasizing the protective, premium nature of the case." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGfIJV7Sq6Iz_Jqb0Na3sAmJNM96bTxdV-Fmu_k0US-mOKSjLeRDoD5OkvaeFmamTiTOtqDUZCbOE1xW8ZfR9R05THOdgUDx9PKO1_xcR6M58V505L103dFsLhNnofiF6zQOusnP-v3QIjl8C_TR-WlJ9AzgBtHauRBobTptWu_w8oUJEaz6YSvB2tO7XarrYVJzWieshS03jmYjBuMJQwVo8042gB72ILn3yM9H0e9S-6MExyptY_Ag"/>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<h4 class="font-h4 text-h4 text-on-surface mb-2">Nexus Shield Case</h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-4 flex-grow">Biometric locking hardshell travel case for absolute protection.</p>
+<div class="flex justify-between items-center mt-auto">
+<span class="font-h4 text-h4 text-primary-fixed-dim">$129</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed transition-colors" data-icon="add_circle">add_circle</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="glass-panel rounded-xl overflow-hidden dimensional-card transition-all duration-300 flex flex-col h-full group cursor-pointer">
+<div class="h-48 relative overflow-hidden bg-surface-container-low flex items-center justify-center p-4">
+<img alt="Premium Cables" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" data-alt="A set of premium braided audio cables with heavy-duty metallic connectors. The cables are dark grey with thin threads of lime green woven through. They are coiled neatly on a dark matte surface. Sharp focus on the machined details of the audio jack. Professional studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBL49I1wUFtX90HhPksaQxD3Z9xyirASEE9qlJmVKQPM3OK4fPUMDVOhfJp1_-QL1JBsyfHPXKXNeyB7cKmFRddfHuL6ippjKRxt03SL5yN7K0eXfWM2UouzPM0z7GLXWe_HFOKmtKdLJ1LQM3wlqSP0J9Lnt9iPQGZgi6ryybJEpEFFNMggVyNkVSH92qdeDgjSr85fsrpaeO4iTItabRnd8aDCi1NEGVg60x0wMwXqKhY4VprddfXA"/>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<h4 class="font-h4 text-h4 text-on-surface mb-2">Quantum Links</h4>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-4 flex-grow">Zero-loss braided connection cables for wired listening.</p>
+<div class="flex justify-between items-center mt-auto">
+<span class="font-h4 text-h4 text-primary-fixed-dim">$45</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed transition-colors" data-icon="add_circle">add_circle</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Placeholder implementation -->
+<footer class="w-full py-12 bg-surface-container-lowest border-t border-outline-variant/30 mt-auto">
+<div class="w-full px-margin-mobile md:px-margin-desktop mt-20 flex flex-col md:flex-row justify-between items-center max-w-container-max mx-auto">
+<div class="font-display text-h3 text-primary-fixed mb-6 md:mb-0">NUVORA</div>
+<ul class="flex flex-wrap gap-6 items-center">
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary-fixed opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary-fixed opacity-80 hover:opacity-100 transition-opacity" href="#">Terms</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary-fixed opacity-80 hover:opacity-100 transition-opacity" href="#">API</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary-fixed opacity-80 hover:opacity-100 transition-opacity" href="#">Careers</a></li>
+</ul>
+<div class="font-body-md text-body-md text-on-surface mt-6 md:mt-0">
+                © 2024 NUVORA. Dimensional Discovery.
+            </div>
+</div>
+</footer>
+</body></html>
