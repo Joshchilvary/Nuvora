@@ -12,6 +12,10 @@ import TrackOrder from "./pages/TrackOrder.jsx";
 import OurStory from "./pages/OurStory.jsx";
 import FAQ from "./pages/FAQ.jsx";
 import SupportCenter from "./pages/SupportCenter.jsx";
+import Careers from "./pages/Careers.jsx";
+import ApiDevelopers from "./pages/ApiDevelopers.jsx";
+import Privacy from "./pages/Privacy.jsx";
+import Terms from "./pages/Terms.jsx";
 
 export default function App() {
   return (
@@ -28,6 +32,10 @@ export default function App() {
         <Route path="/our-story" element={<OurStory />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/support" element={<SupportCenter />} />
+        <Route path="/careers" element={<Careers />} />
+        <Route path="/developers" element={<ApiDevelopers />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
       </Route>
     </Routes>
   );

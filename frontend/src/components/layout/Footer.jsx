@@ -6,10 +6,10 @@ const LINKS = [
   { label: "About", href: "/our-story" },
   { label: "FAQ", href: "/faq" },
   { label: "Support", href: "/support" },
-  { label: "Privacy", href: "#" },
-  { label: "Terms", href: "#" },
-  { label: "API", href: "#" },
-  { label: "Careers", href: "#" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+  { label: "API", href: "/developers" },
+  { label: "Careers", href: "/careers" },
 ];
 
 export default function Footer() {
@@ -24,7 +24,7 @@ export default function Footer() {
             &copy; 2024 NUVORA. Dimensional Discovery.
           </p>
         </div>
-        <nav className="flex gap-8 text-sm">
+        <nav className="flex flex-wrap justify-center gap-4 text-sm md:gap-8">
           {LINKS.map((link) =>
             link.href.startsWith("/") ? (
               <Link
