@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NUVORA Support - FAQ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-container": "#63635f",
+                        "on-surface": "#e2e2e9",
+                        "surface-container-high": "#282a2f",
+                        "surface-dim": "#111318",
+                        "surface-variant": "#33353a",
+                        "error-container": "#93000a",
+                        "on-error": "#690005",
+                        "surface": "#111318",
+                        "inverse-primary": "#486800",
+                        "on-primary-container": "#4c6d00",
+                        "on-secondary-fixed": "#1b1b1f",
+                        "on-primary-fixed": "#131f00",
+                        "tertiary-fixed-dim": "#c8c6c1",
+                        "on-surface-variant": "#c3c9b0",
+                        "primary-fixed": "#baf54c",
+                        "surface-container-low": "#1a1c21",
+                        "on-primary-fixed-variant": "#354e00",
+                        "secondary-fixed": "#e3e2e6",
+                        "inverse-on-surface": "#2e3036",
+                        "on-tertiary": "#30312d",
+                        "on-secondary": "#2f3034",
+                        "on-secondary-container": "#b5b4b9",
+                        "secondary": "#c7c6ca",
+                        "error": "#ffb4ab",
+                        "outline-variant": "#434936",
+                        "on-tertiary-fixed": "#1b1c18",
+                        "on-secondary-fixed-variant": "#46464a",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#e2e0da",
+                        "on-tertiary-fixed-variant": "#474743",
+                        "primary-container": "#b8f34a",
+                        "surface-container": "#1e2025",
+                        "primary-fixed-dim": "#9fd830",
+                        "surface-bright": "#37393f",
+                        "surface-tint": "#9fd830",
+                        "secondary-container": "#46464a",
+                        "primary": "#fcffec",
+                        "tertiary": "#fffdf7",
+                        "surface-container-highest": "#33353a",
+                        "tertiary-fixed": "#e4e2dd",
+                        "on-primary": "#233600",
+                        "secondary-fixed-dim": "#c7c6ca",
+                        "outline": "#8d937c",
+                        "background": "#111318",
+                        "on-background": "#e2e2e9",
+                        "inverse-surface": "#e2e2e9",
+                        "surface-container-lowest": "#0c0e13"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        gutter: "24px",
+                        "container-max": "1440px",
+                        unit: "8px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "64px"
+                    },
+                    fontFamily: {
+                        "h1-mobile": ["Sora"],
+                        "body-lg": ["Manrope"],
+                        display: ["Sora"],
+                        h3: ["Sora"],
+                        h4: ["Sora"],
+                        "label-sm": ["Manrope"],
+                        h1: ["Sora"],
+                        h2: ["Sora"],
+                        "body-md": ["Manrope"]
+                    },
+                    fontSize: {
+                        "h1-mobile": ["40px", { lineHeight: "48px", fontWeight: "600" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        display: ["72px", { lineHeight: "80px", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        h3: ["28px", { lineHeight: "36px", fontWeight: "500" }],
+                        h4: ["22px", { lineHeight: "28px", fontWeight: "500" }],
+                        "label-sm": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }],
+                        h1: ["56px", { lineHeight: "64px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        h2: ["40px", { lineHeight: "48px", fontWeight: "500" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(40, 42, 47, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(141, 147, 124, 0.1);
+        }
+        .ai-glow {
+            box-shadow: inset 0 0 10px rgba(184, 243, 74, 0.1), 0 0 15px rgba(184, 243, 74, 0.05);
+        }
+        .ai-glow-focus:focus-within {
+             box-shadow: inset 0 0 10px rgba(184, 243, 74, 0.2), 0 0 20px rgba(184, 243, 74, 0.15);
+             border-color: #baf54c;
+        }
+        
+        .accordion-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease-out;
+        }
+        
+        .accordion-content.expanded {
+            grid-template-rows: 1fr;
+        }
+        
+        .accordion-inner {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 py-3 bg-surface/80 backdrop-blur-[28px] border border-outline-variant/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-full max-w-7xl mx-auto mt-6 hidden md:flex">
+<div class="flex items-center gap-8">
+<span class="font-display text-h3 text-primary-fixed-dim tracking-tight">NUVORA</span>
+<div class="flex gap-6 font-body-md text-body-md font-semibold">
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Market</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Sellers</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Discover</a>
+<a class="text-primary-fixed font-bold border-b-2 border-primary-fixed pb-1 hover:text-primary-fixed transition-colors duration-300" href="#">Support</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+<button class="bg-surface-container-high hover:bg-surface-variant text-on-surface px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2 border border-outline-variant/30">
+<img alt="User profile" class="w-6 h-6 rounded-full object-cover" data-alt="A small, stylized digital avatar of a futuristic user in dark mode setting with lime green subtle highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqr-VJ9NjIGslg-u1K3TJNE1SMz75YcmWDz7OCW7J8I7fFb4dCeEngusCd9ZFfVfagm-mL92HQB8OEhzFi_yICz40YeS4xWv6gOxdTHryOv0A4DCCCDX0xd76C39cp5h7hu142K_c8nD1k4UpOiYGpl-z3TTrJxB2uZxJUymAakqh0cDjS78YXEVHSahqblOoIIzptV4mtEusNI7xF7nT_BsQl0b3TaJglPvjONWD7IuVRw8DQonl7Pg"/>
+<span>Account</span>
+</button>
+</div>
+</nav>
+<!-- Mobile Nav Header (Simplified) -->
+<header class="md:hidden flex justify-between items-center p-margin-mobile bg-surface/90 backdrop-blur-md fixed top-0 left-0 right-0 z-50 border-b border-outline-variant/20">
+<span class="font-display text-h4 text-primary-fixed-dim tracking-tight">NUVORA</span>
+<button class="text-on-surface">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</header>
+<main class="flex-grow pt-32 md:pt-48 pb-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full relative">
+<!-- Ambient Background Glow -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary-fixed/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+<!-- Hero Section -->
+<section class="text-center mb-24 max-w-3xl mx-auto">
+<h1 class="font-h1-mobile md:font-h1 text-h1-mobile md:text-h1 text-on-surface mb-6 font-bold tracking-tight">How can we help?</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10">Search our knowledge base or browse categories below.</p>
+<div class="relative max-w-2xl mx-auto group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant group-focus-within:text-primary-fixed transition-colors" data-icon="search">search</span>
+</div>
+<input class="w-full bg-surface-container-high border border-outline-variant/30 rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-0 ai-glow-focus transition-all shadow-lg text-lg font-body-md" placeholder="Search for answers, features, or troubleshooting..." type="text"/>
+<div class="absolute inset-y-0 right-0 pr-2 flex items-center">
+<button class="bg-primary-container text-on-primary-container rounded-lg px-4 py-2 font-label-sm hover:brightness-110 transition-all">Search</button>
+</div>
+</div>
+</section>
+<!-- Main Content Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Sidebar Navigation -->
+<aside class="md:col-span-3 hidden md:block relative">
+<div class="sticky top-40 glass-panel rounded-xl p-6">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-4">Categories</h3>
+<nav class="space-y-2 flex flex-col">
+<a class="category-link flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface hover:bg-surface-variant transition-colors" data-target="general" href="#general">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="help">help</span>
+<span class="font-body-md text-body-md font-semibold">General</span>
+</a>
+<a class="category-link flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-colors" data-target="marketplace" href="#marketplace">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="font-body-md text-body-md">Marketplace</span>
+</a>
+<a class="category-link flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-colors" data-target="ai-discovery" href="#ai-discovery">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-body-md text-body-md">AI Discovery</span>
+</a>
+<a class="category-link flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-colors" data-target="security" href="#security">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+<span class="font-body-md text-body-md">Security</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- FAQ Content -->
+<div class="md:col-span-9 space-y-16">
+<!-- General Section -->
+<section class="faq-section scroll-mt-40" id="general">
+<h2 class="font-h3 text-h3 text-primary-fixed-dim mb-8 flex items-center gap-3 border-b border-outline-variant/20 pb-4">
+<span class="material-symbols-outlined text-3xl" data-icon="help">help</span>
+                        General Questions
+                    </h2>
+<div class="space-y-4">
+<!-- FAQ Item -->
+<div class="glass-panel rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300">
+<button class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none focus:bg-surface-variant/50 transition-colors">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold">What is NUVORA?</span>
+<span class="material-symbols-outlined text-primary-fixed transform transition-transform duration-300" data-icon="expand_more">expand_more</span>
+</button>
+<div class="accordion-content bg-surface-container-low/50">
+<div class="accordion-inner px-6 py-5 text-on-surface-variant font-body-md border-t border-outline-variant/10">
+                                    NUVORA is an AI-powered marketplace platform utilizing "Dimensional Discovery" to connect buyers with premium physical and digital goods. Our technology leverages deep learning to anticipate your needs and curate a tailored browsing experience.
+                                </div>
+</div>
+</div>
+<!-- FAQ Item -->
+<div class="glass-panel rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300">
+<button class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none focus:bg-surface-variant/50 transition-colors">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold">How do I create an account?</span>
+<span class="material-symbols-outlined text-primary-fixed transform transition-transform duration-300" data-icon="expand_more">expand_more</span>
+</button>
+<div class="accordion-content bg-surface-container-low/50">
+<div class="accordion-inner px-6 py-5 text-on-surface-variant font-body-md border-t border-outline-variant/10">
+                                    Click 'Account' in the top right navigation, then select 'Register'. You will need a valid email address. Our onboarding AI will guide you through setting your initial discovery preferences.
+                                </div>
+</div>
+</div>
+</div>
+</section>
+<!-- AI Discovery Section -->
+<section class="faq-section scroll-mt-40" id="ai-discovery">
+<h2 class="font-h3 text-h3 text-primary-fixed-dim mb-8 flex items-center gap-3 border-b border-outline-variant/20 pb-4">
+<span class="material-symbols-outlined text-3xl" data-icon="auto_awesome">auto_awesome</span>
+                        AI Discovery
+                    </h2>
+<div class="space-y-4">
+<!-- FAQ Item -->
+<div class="glass-panel ai-glow rounded-xl overflow-hidden hover:shadow-[0_8px_30px_rgb(184,243,74,0.12)] transition-shadow duration-300 border-primary-fixed/20">
+<button class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none focus:bg-surface-variant/50 transition-colors">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold">How does the Discovery Engine work?</span>
+<span class="material-symbols-outlined text-primary-fixed transform transition-transform duration-300" data-icon="expand_more">expand_more</span>
+</button>
+<div class="accordion-content bg-surface-container-low/50">
+<div class="accordion-inner px-6 py-5 text-on-surface-variant font-body-md border-t border-outline-variant/10">
+                                    Our proprietary Discovery Engine analyzes your browsing patterns, purchase history, and interaction dwell times to construct a multi-dimensional preference vector. It doesn't just suggest similar items; it identifies underlying aesthetic and functional preferences to introduce you to entirely new categories you're likely to appreciate.
+                                </div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-lowest py-12 px-margin-mobile md:px-margin-desktop mt-20 flex flex-col md:flex-row justify-between items-center border-t border-outline-variant/30 relative z-10">
+<div class="text-on-surface-variant font-body-md text-body-md mb-6 md:mb-0">
+            © 2024 NUVORA. Dimensional Discovery.
+        </div>
+<div class="font-display text-h3 text-primary-fixed opacity-50 mb-6 md:mb-0 hidden lg:block">NUVORA</div>
+<div class="flex gap-6 font-body-md text-body-md">
+<a class="text-on-surface-variant hover:text-primary-fixed opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-primary-fixed opacity-80 hover:opacity-100 transition-opacity" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-primary-fixed opacity-80 hover:opacity-100 transition-opacity" href="#">API</a>
+<a class="text-on-surface-variant hover:text-primary-fixed opacity-80 hover:opacity-100 transition-opacity" href="#">Careers</a>
+</div>
+</footer>
+<script>
+        // Accordion Logic
+        document.querySelectorAll('.accordion-trigger').forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const content = trigger.nextElementSibling;
+                const icon = trigger.querySelector('.material-symbols-outlined:last-child');
+                
+                // Toggle current
+                content.classList.toggle('expanded');
+                
+                // Rotate icon
+                if (content.classList.contains('expanded')) {
+                    icon.style.transform = 'rotate(180deg)';
+                } else {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            });
+        });
+
+        // Simple Intersection Observer for Sidebar Highlighting
+        const sections = document.querySelectorAll('.faq-section');
+        const navLinks = document.querySelectorAll('.category-link');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '-20% 0px -80% 0px', // Trigger near the top
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    
+                    navLinks.forEach(link => {
+                        const icon = link.querySelector('.material-symbols-outlined');
+                        const text = link.querySelector('span:not(.material-symbols-outlined)');
+                        
+                        if (link.getAttribute('data-target') === id) {
+                            link.classList.remove('text-on-surface-variant');
+                            link.classList.add('text-on-surface', 'bg-surface-variant/50');
+                            icon.classList.add('text-primary-fixed');
+                            text.classList.add('font-semibold');
+                        } else {
+                            link.classList.add('text-on-surface-variant');
+                            link.classList.remove('text-on-surface', 'bg-surface-variant/50');
+                            icon.classList.remove('text-primary-fixed');
+                            text.classList.remove('font-semibold');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body></html>

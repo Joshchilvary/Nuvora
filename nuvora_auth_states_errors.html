@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NUVORA | Authentication States</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&amp;family=Sora:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "inverse-surface": "#e5e2e1",
+                        "primary": "#ffffff",
+                        "outline": "#8e9379",
+                        "secondary-container": "#4a4949",
+                        "surface-container-highest": "#353535",
+                        "on-tertiary-container": "#636565",
+                        "on-error": "#690005",
+                        "on-secondary": "#313030",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "surface-container-low": "#1b1b1c",
+                        "primary-fixed-dim": "#abd600",
+                        "surface-container-lowest": "#0e0e0e",
+                        "inverse-primary": "#506600",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary-fixed-variant": "#474646",
+                        "surface-bright": "#393939",
+                        "inverse-on-surface": "#303030",
+                        "on-surface-variant": "#c4c9ac",
+                        "on-secondary-container": "#bab8b7",
+                        "on-tertiary": "#2f3131",
+                        "surface": "#131313",
+                        "background": "#131313",
+                        "primary-container": "#c3f400",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "on-background": "#e5e2e1",
+                        "on-primary-fixed-variant": "#3c4d00",
+                        "primary-fixed": "#c3f400",
+                        "surface-variant": "#353535",
+                        "on-primary-fixed": "#161e00",
+                        "tertiary-container": "#e2e2e2",
+                        "on-primary": "#283500",
+                        "surface-dim": "#131313",
+                        "outline-variant": "#444933",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-primary-container": "#556d00",
+                        "surface-tint": "#abd600",
+                        "surface-container": "#202020",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary": "#c8c6c5",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-surface": "#e5e2e1",
+                        "tertiary": "#ffffff",
+                        "error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "480px",
+                        "gutter": "1.5rem",
+                        "otp-gap": "0.75rem",
+                        "stack-md": "1rem",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Manrope"],
+                        "label-sm": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "headline-sm": ["Sora"],
+                        "headline-md": ["Sora"],
+                        "mono-auth": ["Sora"],
+                        "display-lg": ["Sora"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-sm": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-md": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "mono-auth": ["24px", { "lineHeight": "32px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    },
+                    "keyframes": {
+                        "pulse-skeleton": {
+                            "0%, 100%": { backgroundColor: "#1E1E1E" },
+                            "50%": { backgroundColor: "#2A2A2A" }
+                        },
+                        "spin-fast": {
+                            "0%": { transform: "rotate(0deg)" },
+                            "100%": { transform: "rotate(360deg)" }
+                        }
+                    },
+                    "animation": {
+                        "pulse-skeleton": "pulse-skeleton 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                        "spin-fast": "spin-fast 0.8s linear infinite"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0e0e0e; /* surface-container-lowest */
+            color: #ffffff; /* primary */
+        }
+        .bg-obsidian { background-color: #1E1E1E; }
+        .bg-obsidian-hover { background-color: #2A2A2A; }
+        .border-ivory-10 { border-color: rgba(255,255,255,0.1); }
+        .border-ivory-20 { border-color: rgba(255,255,255,0.2); }
+        .glow-lime { box-shadow: 0 0 0 2px rgba(204, 255, 0, 0.2); }
+        .glass-panel {
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+<!-- Top Navigation (Shell suppressed visually, but brand present) -->
+<header class="flex justify-between items-center w-full px-5 md:px-8 py-4 bg-transparent fixed top-0 z-50 pointer-events-none">
+<div class="font-headline-md text-headline-md tracking-tight text-primary">NUVORA</div>
+<div class="flex items-center gap-4 text-primary">
+<span class="material-symbols-outlined font-variation-[FILL:0]">help_outline</span>
+</div>
+</header>
+<!-- Main Content Area - Bento Grid of Auth States -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-5 md:px-8 pt-24 pb-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max">
+<!-- 1. Skeleton Loading State -->
+<section class="glass-panel rounded-xl p-8 flex flex-col items-center justify-center min-h-[400px] relative overflow-hidden group col-span-1">
+<div class="w-full max-w-[320px] space-y-6">
+<!-- Logo Skeleton -->
+<div class="h-8 w-32 rounded animate-pulse-skeleton mx-auto mb-8"></div>
+<!-- Title Skeleton -->
+<div class="h-6 w-48 rounded animate-pulse-skeleton mx-auto mb-2"></div>
+<div class="h-4 w-64 rounded animate-pulse-skeleton mx-auto mb-8"></div>
+<!-- Input Skeletons -->
+<div class="space-y-4">
+<div class="h-12 w-full rounded border border-ivory-10 animate-pulse-skeleton"></div>
+<div class="h-12 w-full rounded border border-ivory-10 animate-pulse-skeleton"></div>
+</div>
+<!-- Button Skeleton -->
+<div class="h-12 w-full rounded mt-6 animate-pulse-skeleton" style="background-color: #2A2A2A;"></div>
+</div>
+<div class="absolute bottom-4 left-4 font-label-sm text-label-sm text-on-surface-variant opacity-50">1. Skeleton Loading</div>
+</section>
+<!-- 2. "Invalid credentials" error toast + 5. Validation State -->
+<section class="glass-panel rounded-xl p-8 flex flex-col items-center justify-center min-h-[400px] relative col-span-1 md:col-span-2 lg:col-span-1">
+<div class="w-full max-w-[320px] relative">
+<!-- Error Toast -->
+<div class="absolute -top-16 left-0 right-0 bg-[#3A1414] border border-[#FF3B30] rounded p-3 flex items-start gap-3 shadow-[0_4px_24px_rgba(255,59,48,0.2)]">
+<span class="material-symbols-outlined text-[#FF3B30] text-[20px]">error</span>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-primary">Authentication Failed</p>
+<p class="font-label-sm text-label-sm text-error mt-0.5">Invalid credentials provided.</p>
+</div>
+</div>
+<div class="text-center mb-8">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-2">Sign In</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Enter your details to access the portal.</p>
+</div>
+<form class="space-y-stack-md" onsubmit="event.preventDefault();">
+<!-- Email Input - Error State -->
+<div class="space-y-stack-sm">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Email Address</label>
+<div class="relative">
+<input class="w-full bg-obsidian border-[#FF3B30] rounded px-4 py-3 font-body-md text-body-md text-primary focus:outline-none focus:ring-0 focus:border-[#FF3B30]" type="email" value="user@example.com"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#FF3B30]">warning</span>
+</div>
+<p class="font-label-sm text-label-sm text-[#FF3B30]">Email already registered to another account.</p>
+</div>
+<!-- Password Input - Normal -->
+<div class="space-y-stack-sm">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Password</label>
+<input class="w-full bg-obsidian border-ivory-10 rounded px-4 py-3 font-body-md text-body-md text-primary focus:outline-none hover:border-ivory-20 transition-colors" type="password" value="********"/>
+</div>
+<button class="w-full bg-primary-fixed-dim text-on-primary-container font-label-md text-label-md py-3 rounded hover:opacity-90 transition-opacity mt-stack-lg">
+                        Access Portal
+                    </button>
+</form>
+</div>
+<div class="absolute bottom-4 left-4 font-label-sm text-label-sm text-on-surface-variant opacity-50">2. &amp; 5. Error States</div>
+</section>
+<!-- 3. Google Auth Progress & 4. Session Expired -->
+<section class="flex flex-col gap-6 col-span-1 md:col-span-2 lg:col-span-1">
+<!-- 3. Google Auth Progress -->
+<div class="glass-panel rounded-xl p-8 flex-1 flex flex-col items-center justify-center relative">
+<div class="w-full max-w-[280px] text-center space-y-6">
+<div class="relative w-16 h-16 mx-auto flex items-center justify-center">
+<!-- High-frequency Lime Spinner -->
+<svg class="absolute inset-0 w-full h-full animate-spin-fast" viewbox="0 0 50 50">
+<circle class="path" cx="25" cy="25" fill="none" r="20" stroke="#CCFF00" stroke-dasharray="90, 150" stroke-dashoffset="0" stroke-width="2"></circle>
+</svg>
+<!-- Google G (simplified standard icon) -->
+<svg fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-1">Authenticating</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Connecting with Google...</p>
+</div>
+</div>
+<div class="absolute bottom-4 left-4 font-label-sm text-label-sm text-on-surface-variant opacity-50">3. Auth Progress</div>
+</div>
+<!-- 4. Session Expired -->
+<div class="glass-panel rounded-xl p-6 flex flex-col items-center justify-center relative bg-[#1E1E1E]/80 border-[#FFCC00]/30">
+<div class="flex items-start gap-4 w-full">
+<div class="w-10 h-10 rounded-full bg-[#FFCC00]/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[#FFCC00]">timer_off</span>
+</div>
+<div class="flex-1">
+<h4 class="font-label-md text-label-md text-primary mb-1">Session Expired</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">For your security, you have been logged out due to inactivity.</p>
+<button class="font-label-md text-label-md text-primary-fixed-dim hover:text-primary transition-colors flex items-center gap-2">
+                            Return to Login <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="absolute bottom-2 right-4 font-label-sm text-label-sm text-on-surface-variant opacity-50">4. Session Expired</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-8 px-5 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4 bg-surface-container-lowest mt-auto pointer-events-none opacity-50">
+<div class="font-h4 text-h4 text-primary">NUVORA</div>
+<div class="font-body-md text-body-md text-on-surface-variant">© 2024 NUVORA AI. All rights reserved.</div>
+</footer>
+</body></html>

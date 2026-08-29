@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NUVORA | Login</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&amp;family=Sora:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ffb4ab",
+                    "inverse-surface": "#e5e2e1",
+                    "primary": "#ffffff",
+                    "outline": "#8e9379",
+                    "secondary-container": "#4a4949",
+                    "surface-container-highest": "#353535",
+                    "on-tertiary-container": "#636565",
+                    "on-error": "#690005",
+                    "on-secondary": "#313030",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "surface-container-low": "#1b1b1c",
+                    "primary-fixed-dim": "#abd600",
+                    "surface-container-lowest": "#0e0e0e",
+                    "inverse-primary": "#506600",
+                    "on-error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "on-secondary-fixed-variant": "#474646",
+                    "surface-bright": "#393939",
+                    "inverse-on-surface": "#303030",
+                    "on-surface-variant": "#c4c9ac",
+                    "on-secondary-container": "#bab8b7",
+                    "on-tertiary": "#2f3131",
+                    "surface": "#131313",
+                    "background": "#131313",
+                    "primary-container": "#c3f400",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-background": "#e5e2e1",
+                    "on-primary-fixed-variant": "#3c4d00",
+                    "primary-fixed": "#c3f400",
+                    "surface-variant": "#353535",
+                    "on-primary-fixed": "#161e00",
+                    "tertiary-container": "#e2e2e2",
+                    "on-primary": "#283500",
+                    "surface-dim": "#131313",
+                    "outline-variant": "#444933",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-primary-container": "#556d00",
+                    "surface-tint": "#abd600",
+                    "surface-container": "#202020",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary": "#c8c6c5",
+                    "tertiary-fixed": "#e2e2e2",
+                    "on-surface": "#e5e2e1",
+                    "tertiary": "#ffffff",
+                    "error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "480px",
+                    "gutter": "1.5rem",
+                    "otp-gap": "0.75rem",
+                    "stack-md": "1rem",
+                    "stack-lg": "2rem",
+                    "stack-sm": "0.5rem"
+            },
+            "fontFamily": {
+                    "label-md": ["Manrope"],
+                    "label-sm": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "headline-sm": ["Sora"],
+                    "headline-md": ["Sora"],
+                    "mono-auth": ["Sora"],
+                    "display-lg": ["Sora"],
+                    "body-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "mono-auth": ["24px", {"lineHeight": "32px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .input-glow:focus {
+            box-shadow: 0 0 0 2px rgba(195, 244, 0, 0.2); /* Lime 20% */
+            border-color: #c3f400; /* primary-container */
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen flex items-center justify-center relative overflow-hidden text-on-surface antialiased p-5 md:p-0">
+<!-- Atmospheric Background Effect -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] bg-primary-container opacity-[0.03] blur-[120px] rounded-full pointer-events-none z-0"></div>
+<!-- Main Auth Card -->
+<main class="w-full max-w-container-max z-10">
+<div class="relative bg-surface-container-low/40 backdrop-blur-[20px] border border-outline-variant/30 rounded-xl p-8 md:p-10 shadow-2xl overflow-hidden">
+<!-- Inner subtle glow top edge -->
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary-container/20 to-transparent"></div>
+<!-- Header -->
+<div class="flex flex-col items-center mb-stack-lg text-center">
+<div class="w-12 h-12 rounded-full border border-outline-variant/50 flex items-center justify-center mb-4 bg-surface">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">
+                        change_history
+                    </span>
+</div>
+<h1 class="font-headline-sm text-headline-sm text-primary mb-2">Welcome back</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Access your discovery portal.</p>
+</div>
+<!-- Form -->
+<form class="flex flex-col gap-stack-md" onsubmit="event.preventDefault();">
+<div class="flex flex-col gap-stack-sm">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-1" for="email">Email address</label>
+<input class="w-full bg-surface border border-outline-variant/50 rounded-DEFAULT px-4 py-3 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 outline-none transition-all input-glow" id="email" placeholder="name@nuvora.ai" required="" type="email"/>
+</div>
+<div class="flex flex-col gap-stack-sm">
+<div class="flex justify-between items-center ml-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="password">Password</label>
+<a class="font-label-sm text-label-sm text-primary-container hover:text-primary-fixed-dim transition-colors" href="#">Forgot password?</a>
+</div>
+<div class="relative">
+<input class="w-full bg-surface border border-outline-variant/50 rounded-DEFAULT px-4 py-3 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 outline-none transition-all input-glow pr-10" id="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container font-label-md text-label-md py-3 rounded-DEFAULT hover:opacity-90 transition-opacity mt-2 flex items-center justify-center gap-2" type="submit">
+                    Sign In
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</form>
+<!-- Divider -->
+<div class="flex items-center gap-4 my-8">
+<div class="h-[1px] flex-1 bg-outline-variant/30"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Or continue with</span>
+<div class="h-[1px] flex-1 bg-outline-variant/30"></div>
+</div>
+<!-- Social Logins -->
+<div class="flex flex-col gap-stack-sm mb-stack-lg">
+<button class="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant/50 rounded-DEFAULT bg-transparent hover:bg-surface-container-highest/20 transition-colors group" type="button">
+<svg class="w-5 h-5 opacity-90 group-hover:opacity-100 transition-opacity" viewbox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+<span class="font-label-md text-label-md text-primary">Continue with Google</span>
+</button>
+<button class="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant/50 rounded-DEFAULT bg-transparent hover:bg-surface-container-highest/20 transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px] text-primary">smartphone</span>
+<span class="font-label-md text-label-md text-primary">Continue with Phone</span>
+</button>
+</div>
+<!-- Footer Links & Security -->
+<div class="flex flex-col items-center gap-6">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    Don't have an account? 
+                    <a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors ml-1" href="#">Create an account</a>
+</p>
+<div class="flex items-center gap-2 text-on-surface-variant/60 bg-surface/50 px-4 py-2 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span class="font-label-sm text-label-sm">Your discovery is protected by end-to-end encryption.</span>
+</div>
+</div>
+</div>
+</main>
+</body></html>

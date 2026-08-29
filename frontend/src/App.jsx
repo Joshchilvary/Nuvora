@@ -16,6 +16,7 @@ import Careers from "./pages/Careers.jsx";
 import ApiDevelopers from "./pages/ApiDevelopers.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Terms from "./pages/Terms.jsx";
+import SellOnNuvora from "./pages/SellOnNuvora.jsx";
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/developers" element={<ApiDevelopers />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/sell" element={<SellOnNuvora />} />
       </Route>
     </Routes>
   );

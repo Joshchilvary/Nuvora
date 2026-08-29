@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>About NUVORA | Dimensional Discovery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&amp;family=Sora:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-background": "#e2e2e9",
+                      "primary-fixed": "#baf54c",
+                      "surface-dim": "#111318",
+                      "primary": "#fcffec",
+                      "on-secondary-fixed": "#1b1b1f",
+                      "on-secondary": "#2f3034",
+                      "outline": "#8d937c",
+                      "secondary-fixed": "#e3e2e6",
+                      "error": "#ffb4ab",
+                      "inverse-primary": "#486800",
+                      "background": "#111318",
+                      "inverse-surface": "#e2e2e9",
+                      "on-primary-fixed": "#131f00",
+                      "tertiary-fixed": "#e4e2dd",
+                      "on-secondary-fixed-variant": "#46464a",
+                      "surface": "#111318",
+                      "on-primary-fixed-variant": "#354e00",
+                      "surface-container-low": "#1a1c21",
+                      "tertiary-fixed-dim": "#c8c6c1",
+                      "error-container": "#93000a",
+                      "on-secondary-container": "#b5b4b9",
+                      "tertiary": "#fffdf7",
+                      "surface-container-lowest": "#0c0e13",
+                      "on-surface": "#e2e2e9",
+                      "surface-container": "#1e2025",
+                      "on-primary-container": "#4c6d00",
+                      "tertiary-container": "#e2e0da",
+                      "surface-bright": "#37393f",
+                      "primary-fixed-dim": "#9fd830",
+                      "outline-variant": "#434936",
+                      "on-tertiary-container": "#63635f",
+                      "on-tertiary-fixed-variant": "#474743",
+                      "secondary-fixed-dim": "#c7c6ca",
+                      "secondary-container": "#46464a",
+                      "secondary": "#c7c6ca",
+                      "surface-tint": "#9fd830",
+                      "on-tertiary-fixed": "#1b1c18",
+                      "primary-container": "#b8f34a",
+                      "on-tertiary": "#30312d",
+                      "on-error-container": "#ffdad6",
+                      "inverse-on-surface": "#2e3036",
+                      "surface-variant": "#33353a",
+                      "on-primary": "#233600",
+                      "on-surface-variant": "#c3c9b0",
+                      "surface-container-highest": "#33353a",
+                      "on-error": "#690005",
+                      "surface-container-high": "#282a2f"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "20px",
+                      "unit": "8px",
+                      "container-max": "1440px",
+                      "margin-desktop": "64px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "h1": [
+                              "Sora"
+                      ],
+                      "display": [
+                              "Sora"
+                      ],
+                      "h2": [
+                              "Sora"
+                      ],
+                      "body-lg": [
+                              "Manrope"
+                      ],
+                      "h3": [
+                              "Sora"
+                      ],
+                      "h4": [
+                              "Sora"
+                      ],
+                      "h1-mobile": [
+                              "Sora"
+                      ],
+                      "body-md": [
+                              "Manrope"
+                      ],
+                      "label-sm": [
+                              "Manrope"
+                      ]
+              },
+              "fontSize": {
+                      "h1": [
+                              "56px",
+                              {
+                                      "lineHeight": "64px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display": [
+                              "72px",
+                              {
+                                      "lineHeight": "80px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h2": [
+                              "40px",
+                              {
+                                      "lineHeight": "48px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h3": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "h4": [
+                              "22px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "h1-mobile": [
+                              "40px",
+                              {
+                                      "lineHeight": "48px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+          .glass-panel {
+              background: rgba(30, 32, 37, 0.4);
+              backdrop-filter: blur(20px);
+              -webkit-backdrop-filter: blur(20px);
+              border: 1px solid rgba(141, 147, 124, 0.1);
+          }
+          .glass-floating {
+              backdrop-filter: blur(28px);
+              -webkit-backdrop-filter: blur(28px);
+          }
+          .glow-border {
+              position: relative;
+          }
+          .glow-border::before {
+              content: '';
+              position: absolute;
+              top: -1px; left: -1px; right: -1px; bottom: -1px;
+              border-radius: inherit;
+              background: linear-gradient(45deg, transparent, rgba(184, 243, 74, 0.3), transparent);
+              z-index: -1;
+              opacity: 0;
+              transition: opacity 0.3s ease;
+          }
+          .glow-border:hover::before {
+              opacity: 1;
+          }
+          .hero-gradient {
+              background: radial-gradient(circle at 50% 50%, rgba(184, 243, 74, 0.05) 0%, rgba(17, 19, 24, 0) 70%);
+          }
+      </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
+<!-- Top Navigation (Shared Component) -->
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 py-3 bg-surface/80 glass-floating border border-outline-variant/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-full max-w-7xl mx-auto mt-6 hidden md:flex">
+<a class="font-display text-h3 text-primary-fixed-dim tracking-tight" href="#">NUVORA</a>
+<nav class="flex gap-8">
+<a class="font-body-md text-body-md font-semibold text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Market</a>
+<a class="font-body-md text-body-md font-semibold text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Sellers</a>
+<a class="font-body-md text-body-md font-semibold text-primary-fixed font-bold border-b-2 border-primary-fixed" href="#">Discover</a>
+<a class="font-body-md text-body-md font-semibold text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Support</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="font-body-md text-body-md font-semibold text-on-surface-variant hover:text-primary-fixed transition-colors duration-300">Account</button>
+</div>
+</header>
+<main class="flex-grow pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full relative">
+<!-- Hero Section -->
+<section class="relative min-h-[716px] flex flex-col justify-center items-center text-center hero-gradient mb-32">
+<div class="absolute inset-0 z-[-1] opacity-30">
+<div class="w-full h-full bg-cover bg-center mix-blend-screen" data-alt="Abstract dimensional digital artwork featuring deep obsidian layers intersecting with glowing neon lime glassmorphic planes. The aesthetic is corporate modern and sophisticated, evoking high-end technology and intelligent discovery in a dark, moody environment with soft atmospheric lighting." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAp-7UlilO4SsPtZR8D0cw_AwzDlalTkBxPPxzeBbvg8G9oEe7ADwlQSOCejWzicrfLAxApFSLMiVSL5i6VII19RmBWOE4VyRHKe9eiuZ0ZvJlZmW877KveUma6olnlLrnksTrkAoBt_IsNh39N6arMs34NMq7l8n5iiddVG99BPWHSsrJmCYoNgKydqTldLAHWJBiGuT5_Y2TXtf_OmzW2RpRAvqemScm-_A47zeYvWiiICuR5V8N37g')"></div>
+</div>
+<h1 class="font-display text-h1-mobile md:text-display text-on-background max-w-4xl mx-auto mb-6 leading-tight">
+                The Architecture of <br/>
+<span class="text-primary-container">Intelligent Discovery.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-12">
+                Merging the precision of high-end technology with the tactility of premium physical goods. NUVORA is a dimensional marketplace powered by AI, designed for effortless navigation and secure transactions.
+            </p>
+</section>
+<!-- Vision Section (Bento Grid) -->
+<section class="mb-32">
+<h2 class="font-h2 text-h2 text-on-background mb-12">The Physical Digital Vision</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-unit auto-rows-[300px]">
+<!-- Main Feature -->
+<div class="md:col-span-2 md:row-span-2 glass-panel rounded-xl p-8 relative overflow-hidden group glow-border flex flex-col justify-end">
+<div class="absolute inset-0 z-[-1] transition-transform duration-700 group-hover:scale-105">
+<div class="w-full h-full bg-cover bg-center opacity-40" data-alt="Close up of a futuristic physical product interface merging with digital holographic projections. Deep blacks and warm ivory tones with sharp vibrant lime accents. The materials look like premium matte plastic and frosted glass, glowing subtly in a sophisticated dark mode environment." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCcxcPmXKzVdYqPmS5wKk5ZmUYj54WeWoTOk_mAQ1jPmhSy9qbVzU0Zi-3kXU4nw-8LyG2RN4AGB6YQ3wtUPaPEupOJ_eiJs2IlAsLYVFXZuQ6-z3x98oSOYv1eSPbHTJF_FxDNx9lI7hreu41SLYS_JgTIvd1XYsmmCDjCIzKgPbVuUg977Vz8NjCNaFXQVKxsVuWoFkPxwIV-_2lWCc93DfxulN7Y4z0QhhCII_CbpS9NWWVMzVZ9Vg')"></div>
+</div>
+<div class="relative z-10">
+<h3 class="font-h3 text-h3 text-primary-container mb-4">Tactile AI</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">Our algorithms don't just sort data; they understand the dimensional qualities of objects, bringing the physical sensation of premium goods into the digital space.</p>
+</div>
+</div>
+<!-- Secondary Feature 1 -->
+<div class="glass-panel rounded-xl p-8 flex flex-col justify-between glow-border group relative overflow-hidden">
+<span class="material-symbols-outlined text-4xl text-primary-fixed-dim">security</span>
+<div>
+<h4 class="font-h4 text-h4 text-on-background mb-2">Cryptographic Security</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Every interaction is locked within a secure, distributed ledger, ensuring trust across all dimensions.</p>
+</div>
+</div>
+<!-- Secondary Feature 2 -->
+<div class="glass-panel rounded-xl p-8 flex flex-col justify-between glow-border group relative overflow-hidden bg-surface-container-high/50">
+<span class="material-symbols-outlined text-4xl text-primary-fixed-dim">language</span>
+<div>
+<h4 class="font-h4 text-h4 text-on-background mb-2">Global Scale</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Borderless infrastructure built for seamless high-value transactions worldwide.</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="w-full px-margin-mobile md:px-margin-desktop py-12 bg-surface-container-lowest border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center mt-20">
+<a class="font-display text-h3 text-primary-fixed mb-6 md:mb-0" href="#">NUVORA</a>
+<nav class="flex gap-6 mb-6 md:mb-0">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Privacy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Terms</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">API</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Careers</a>
+</nav>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-80">© 2024 NUVORA. Dimensional Discovery.</p>
+</footer>
+</body></html>

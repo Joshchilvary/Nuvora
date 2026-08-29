@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sell on NUVORA | Dimensional Discovery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&amp;family=Sora:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#63635f",
+                        "on-surface": "#e2e2e9",
+                        "surface-container-high": "#282a2f",
+                        "surface-dim": "#111318",
+                        "surface-variant": "#33353a",
+                        "error-container": "#93000a",
+                        "on-error": "#690005",
+                        "surface": "#111318",
+                        "inverse-primary": "#486800",
+                        "on-primary-container": "#4c6d00",
+                        "on-secondary-fixed": "#1b1b1f",
+                        "on-primary-fixed": "#131f00",
+                        "tertiary-fixed-dim": "#c8c6c1",
+                        "on-surface-variant": "#c3c9b0",
+                        "primary-fixed": "#baf54c",
+                        "surface-container-low": "#1a1c21",
+                        "on-primary-fixed-variant": "#354e00",
+                        "secondary-fixed": "#e3e2e6",
+                        "inverse-on-surface": "#2e3036",
+                        "on-tertiary": "#30312d",
+                        "on-secondary": "#2f3034",
+                        "on-secondary-container": "#b5b4b9",
+                        "secondary": "#c7c6ca",
+                        "error": "#ffb4ab",
+                        "outline-variant": "#434936",
+                        "on-tertiary-fixed": "#1b1c18",
+                        "on-secondary-fixed-variant": "#46464a",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#e2e0da",
+                        "on-tertiary-fixed-variant": "#474743",
+                        "primary-container": "#b8f34a",
+                        "surface-container": "#1e2025",
+                        "primary-fixed-dim": "#9fd830",
+                        "surface-bright": "#37393f",
+                        "surface-tint": "#9fd830",
+                        "secondary-container": "#46464a",
+                        "primary": "#fcffec",
+                        "tertiary": "#fffdf7",
+                        "surface-container-highest": "#33353a",
+                        "tertiary-fixed": "#e4e2dd",
+                        "on-primary": "#233600",
+                        "secondary-fixed-dim": "#c7c6ca",
+                        "outline": "#8d937c",
+                        "background": "#111318",
+                        "on-background": "#e2e2e9",
+                        "inverse-surface": "#e2e2e9",
+                        "surface-container-lowest": "#0c0e13"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1440px",
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "h1-mobile": ["Sora"],
+                        "body-lg": ["Manrope"],
+                        "display": ["Sora"],
+                        "h3": ["Sora"],
+                        "h4": ["Sora"],
+                        "label-sm": ["Manrope"],
+                        "h1": ["Sora"],
+                        "h2": ["Sora"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "h1-mobile": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display": ["72px", { "lineHeight": "80px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "h3": ["28px", { "lineHeight": "36px", "fontWeight": "500" }],
+                        "h4": ["22px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "label-sm": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "h1": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "h2": ["40px", { "lineHeight": "48px", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            overflow-x: hidden;
+        }
+        
+        .glass-panel {
+            background: rgba(30, 32, 37, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(141, 147, 124, 0.1);
+        }
+
+        .ai-glow {
+            box-shadow: inset 0 0 0 2px rgba(184, 243, 74, 0.2), 0 0 20px rgba(184, 243, 74, 0.05);
+        }
+        
+        .hover-lift {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, theme('colors.on-surface') 0%, theme('colors.primary-fixed') 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col font-body-md text-body-md">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 py-3 bg-surface/80 backdrop-blur-[28px] border border-outline-variant/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-full max-w-7xl mx-auto mt-6 hidden md:flex">
+<div class="flex items-center gap-8">
+<span class="font-display text-h3 text-primary-fixed-dim tracking-tight">NUVORA</span>
+<nav class="flex gap-6 font-body-md text-body-md font-semibold">
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Market</a>
+<a class="text-primary-fixed font-bold border-b-2 border-primary-fixed hover:text-primary-fixed transition-colors duration-300" href="#">Sellers</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Discover</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Support</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center p-2 rounded-full text-on-surface-variant hover:text-primary-fixed transition-colors duration-300 hover:bg-surface-variant/50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dark_mode</span>
+</button>
+<button class="flex items-center justify-center p-2 rounded-full text-on-surface-variant hover:text-primary-fixed transition-colors duration-300 hover:bg-surface-variant/50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-variant/50 border border-outline-variant/30 text-on-surface-variant hover:text-primary-fixed transition-colors duration-300">
+<span class="material-symbols-outlined text-sm">search</span>
+<span class="font-label-sm text-label-sm">Search</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-2 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm hover:bg-primary-fixed-dim transition-colors">
+                Account
+            </button>
+</div>
+</header>
+<main class="flex-grow pt-32 md:pt-48 pb-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+<!-- Hero Section -->
+<section class="relative min-h-[716px] flex flex-col items-center justify-center text-center mb-32 z-10">
+<div class="absolute inset-0 -z-10 overflow-hidden rounded-[2rem] opacity-30">
+<!-- Decorative background elements -->
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-fixed/10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-surface-tint/10 rounded-full blur-[100px]"></div>
+</div>
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel border border-primary-fixed/20 mb-8">
+<span class="w-2 h-2 rounded-full bg-primary-fixed animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-primary-fixed">Seller Portal V2 Live</span>
+</div>
+<h1 class="font-display text-h1-mobile md:text-display text-on-surface mb-6 max-w-4xl tracking-tight leading-tight">
+                Bring your products into the <span class="gradient-text">dimension.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-12 max-w-2xl mx-auto">
+                Join NUVORA's curated marketplace. Leverage AI-powered discovery to connect your premium goods with discerning buyers across the digital landscape.
+            </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="px-8 py-4 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm hover:bg-primary-fixed-dim transition-colors shadow-[0_0_20px_rgba(184,243,74,0.2)]">
+                    Become a Seller
+                </button>
+<button class="px-8 py-4 rounded-full glass-panel text-on-surface font-label-sm text-label-sm hover:bg-surface-variant transition-colors flex items-center gap-2">
+                    Explore Analytics <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- Value Prop / Bento Grid -->
+<section class="mb-32">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[minmax(300px,auto)]">
+<!-- Feature 1: AI Discovery -->
+<div class="md:col-span-8 glass-panel rounded-3xl p-8 hover-lift flex flex-col justify-between overflow-hidden relative group ai-glow">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-fixed/5 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/4"></div>
+<div class="z-10">
+<span class="material-symbols-outlined text-primary-fixed mb-4 text-4xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h3 class="font-h3 text-h3 text-on-surface mb-2">Algorithmic Matchmaking</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">Our AI doesn't just list products; it understands them. We connect your inventory with buyers exhibiting high-intent behavioral patterns, minimizing acquisition costs.</p>
+</div>
+<div class="mt-8 rounded-xl border border-outline-variant/20 overflow-hidden relative h-48 bg-surface-container">
+<div class="absolute inset-0 flex items-center justify-center">
+<!-- Abstract Representation of matching -->
+<div class="w-full h-full opacity-50 flex items-center justify-around px-12">
+<div class="w-16 h-16 rounded-full border border-primary-fixed/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">person</span>
+</div>
+<div class="h-[2px] flex-grow bg-gradient-to-r from-transparent via-primary-fixed/50 to-transparent relative">
+<div class="absolute w-2 h-2 rounded-full bg-primary-fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 shadow-[0_0_10px_#baf54c]"></div>
+</div>
+<div class="w-16 h-16 rounded-lg border border-primary-fixed/30 flex items-center justify-center rotate-12">
+<span class="material-symbols-outlined text-on-surface-variant">inventory_2</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Feature 2: Secure Infrastructure -->
+<div class="md:col-span-4 glass-panel rounded-3xl p-8 hover-lift flex flex-col justify-between group">
+<div>
+<span class="material-symbols-outlined text-on-surface mb-4 text-4xl group-hover:text-primary-fixed transition-colors" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<h3 class="font-h3 text-h3 text-on-surface mb-2">Ironclad Security</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Enterprise-grade encryption and automated fraud prevention protect every transaction in the dimension.</p>
+</div>
+<div class="mt-8">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-primary-fixed text-sm">check_circle</span>
+<span class="text-sm text-on-surface-variant">Zero-knowledge proofs</span>
+</div>
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-primary-fixed text-sm">check_circle</span>
+<span class="text-sm text-on-surface-variant">Instant settlements</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-fixed text-sm">check_circle</span>
+<span class="text-sm text-on-surface-variant">Dispute resolution protocol</span>
+</div>
+</div>
+</div>
+<!-- Feature 3: Editorial Showcase -->
+<div class="md:col-span-12 glass-panel rounded-3xl p-8 hover-lift overflow-hidden relative min-h-[400px] flex items-center">
+<div class="w-1/2 z-10 pr-12 pl-4">
+<span class="material-symbols-outlined text-primary-fixed mb-4 text-4xl" style="font-variation-settings: 'FILL' 1;">view_in_ar</span>
+<h3 class="font-h2 text-h2 text-on-surface mb-4">Premium Presentation Canvas</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-6">Your products deserve better than a flat white background. NUVORA provides an immersive, customizable environment that respects your brand's aesthetic.</p>
+<button class="text-primary-fixed font-label-sm text-label-sm hover:underline flex items-center gap-1">
+                            View Showcase Gallery <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="absolute right-0 top-0 bottom-0 w-1/2">
+<div class="absolute inset-0 bg-gradient-to-r from-surface-container-high/90 to-transparent z-10"></div>
+<img class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" data-alt="A sleek, modern editorial product shot of a high-end designer watch floating in a dark, atmospheric environment. Soft, dramatic studio lighting highlights the metallic textures against a deep obsidian background. Subtle glowing lime green accents suggest a technological overlay. The mood is luxurious, cutting-edge, and highly professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAstQz9m3qkTG76vVliGt73NKYcxpOjtAgZkTyK-GzukeTngH5fly3UoBojAGSgtZyNONpXUIkkPbxmolz1t92A2hXBY46-BFhGdRrpYqlv8Yxic_taIXSmrmNCLFdOhOjtsGz835NuN8fQ_GdtpMGMm21gIiaAlxgqmbBi6H4jvNAqlPiBttF_i-mZnyiwDDRwyraC4yB5YR3WPAN75IORQQZcWrSwA1LdY2udbsb8fruRIIM8mIsbdg"/>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-lowest py-12 px-margin-mobile md:px-margin-desktop border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-8 z-40 relative">
+<div class="font-display text-h3 text-primary-fixed opacity-80 hover:opacity-100 transition-opacity">
+            NUVORA
+        </div>
+<nav class="flex gap-6 font-body-md text-body-md">
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">API</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Careers</a>
+</nav>
+<div class="font-body-md text-body-md text-on-surface-variant">
+            © 2024 NUVORA. Dimensional Discovery.
+        </div>
+</footer>
+</body></html>

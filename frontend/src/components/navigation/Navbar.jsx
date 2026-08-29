@@ -8,7 +8,7 @@ import { useCart } from "../../context/CartContext.jsx";
 
 const LINKS = [
   { label: "Market", to: "/marketplace" },
-  { label: "Sellers", to: "/sellers" },
+  { label: "Sellers", to: "/sell" },
   { label: "Discover", to: "/discover" },
   { label: "Support", to: "/support" },
 ];
