@@ -12,9 +12,9 @@ export default function OurStory() {
     <div className="relative">
       {/* Hero Section */}
       <section className="hero-gradient relative min-h-[716px] flex flex-col justify-center items-center text-center mb-32">
-        <div className="absolute inset-0 z-[-1] opacity-20 dark:opacity-30">
+        <div className="absolute inset-0 z-[-1] opacity-30">
           <div
-            className="w-full h-full bg-cover bg-center dark:mix-blend-screen"
+            className="w-full h-full bg-cover bg-center mix-blend-screen"
             style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
           />
         </div>
@@ -39,7 +39,7 @@ export default function OurStory() {
           <div className="glass-panel md:col-span-2 md:row-span-2 glow-border group relative overflow-hidden rounded-xl p-8 flex flex-col justify-end">
             <div className="absolute inset-0 z-[-1] transition-transform duration-700 group-hover:scale-105">
               <div
-                className="h-full w-full bg-cover bg-center opacity-40"
+                className="h-full w-full bg-cover bg-center opacity-40 mix-blend-screen"
                 style={{ backgroundImage: `url('${VISION_IMAGE}')` }}
               />
             </div>
