@@ -10,6 +10,8 @@ import Checkout from "./pages/Checkout.jsx";
 import OrderConfirmed from "./pages/OrderConfirmed.jsx";
 import TrackOrder from "./pages/TrackOrder.jsx";
 import OurStory from "./pages/OurStory.jsx";
+import FAQ from "./pages/FAQ.jsx";
+import SupportCenter from "./pages/SupportCenter.jsx";
 
 export default function App() {
   return (
@@ -24,6 +26,8 @@ export default function App() {
         <Route path="/order-confirmed" element={<OrderConfirmed />} />
         <Route path="/track-order" element={<TrackOrder />} />
         <Route path="/our-story" element={<OurStory />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/support" element={<SupportCenter />} />
       </Route>
     </Routes>
   );
