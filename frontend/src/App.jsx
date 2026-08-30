@@ -17,6 +17,11 @@ import ApiDevelopers from "./pages/ApiDevelopers.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Terms from "./pages/Terms.jsx";
 import SellOnNuvora from "./pages/SellOnNuvora.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import PasswordRecovery from "./pages/PasswordRecovery.jsx";
+import PhoneVerification from "./pages/PhoneVerification.jsx";
+import AuthStates from "./pages/AuthStates.jsx";
 
 export default function App() {
   return (
@@ -38,6 +43,11 @@ export default function App() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/sell" element={<SellOnNuvora />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<PasswordRecovery />} />
+        <Route path="/verify-phone" element={<PhoneVerification />} />
+        <Route path="/auth-states" element={<AuthStates />} />
       </Route>
     </Routes>
   );

@@ -193,14 +193,12 @@ export default function TrackOrder() {
             Continue Shopping
           </Button>
         </Link>
-        <Button
-          variant="secondary"
-          size="lg"
-          className="w-full px-8 py-4 sm:w-auto"
-        >
-          <span className="material-symbols text-[18px]">support_agent</span>
-          Support
-        </Button>
+        <Link to="/support" className="w-full sm:w-auto">
+          <Button variant="secondary" size="lg" className="w-full px-8 py-4 sm:w-auto">
+            <span className="material-symbols text-[18px]">support_agent</span>
+            Support
+          </Button>
+        </Link>
       </div>
 
       <p className="mt-6 text-[13px] text-text-muted">

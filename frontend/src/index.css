@@ -159,6 +159,30 @@
   }
 }
 
+@keyframes spin-fast {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-fast {
+  animation: spin-fast 0.8s linear infinite;
+}
+
+@keyframes pulse-skeleton {
+  0%,
+  100% {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.animate-pulse-skeleton {
+  animation: pulse-skeleton 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 .confirm-check {
   stroke-dasharray: 30;
   stroke-dashoffset: 30;

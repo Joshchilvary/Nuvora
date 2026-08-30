@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Button from "../ui/Button.jsx";
 
 const HERO_IMAGE =
@@ -23,15 +24,19 @@ export default function HeroSection() {
             meets premium curated goods.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Button className="rounded-full px-8 py-4 text-base">
-              Start Exploring
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-full bg-surface/40 px-8 py-4 text-base backdrop-blur-[20px]"
-            >
-              View Collections
-            </Button>
+            <Link to="/marketplace">
+              <Button className="rounded-full px-8 py-4 text-base">
+                Start Exploring
+              </Button>
+            </Link>
+            <Link to="/discover">
+              <Button
+                variant="outline"
+                className="rounded-full bg-surface/40 px-8 py-4 text-base backdrop-blur-[20px]"
+              >
+                View Collections
+              </Button>
+            </Link>
           </div>
         </div>
 

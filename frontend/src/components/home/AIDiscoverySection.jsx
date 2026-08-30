@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Badge from "../ui/Badge.jsx";
 
 const AI_IMAGES = [
@@ -27,13 +28,13 @@ export default function AIDiscoverySection() {
               Our intelligence engine has mapped your preferences to unique items
               across the dimensional space.
             </p>
-            <a
-              href="#"
+            <Link
+              to="/discover"
               className="flex w-fit items-center gap-2 font-label-sm text-accent transition-all hover:gap-4"
             >
               Explore tailored picks
               <span className="material-symbols">arrow_forward</span>
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

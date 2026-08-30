@@ -77,9 +77,12 @@ export default function Navbar() {
             )}
           </Link>
 
-          <Button size="sm" className="hidden md:inline-flex">
-            Account
-          </Button>
+          <Link
+            to="/login"
+            className="hidden md:inline-flex"
+          >
+            <Button size="sm">Account</Button>
+          </Link>
 
           <button
             className="text-text-muted transition-colors hover:text-accent md:hidden"

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   SUPPORT_TOPICS,
   CONTACT_METHODS,
@@ -109,10 +110,10 @@ export default function SupportCenter() {
         <div className="mx-auto max-w-7xl px-6 md:px-8">
           <div className="flex items-end justify-between mb-8">
             <h2 className="font-h2 text-h2 text-text-primary">Popular Topics</h2>
-            <button className="flex items-center gap-1 font-label-sm text-accent transition-colors hover:text-accent/80">
+            <Link to="/faq" className="flex items-center gap-1 font-label-sm text-accent transition-colors hover:text-accent/80">
               View all
               <span className="material-symbols text-sm">chevron_right</span>
-            </button>
+            </Link>
           </div>
           {filteredTopics.length === 0 ? (
             <div className="rounded-xl border border-outline-variant/20 bg-surface p-10 text-center">

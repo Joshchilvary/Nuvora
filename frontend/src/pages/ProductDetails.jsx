@@ -273,7 +273,16 @@ export default function ProductDetails() {
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {related.map((item) => (
-              <ProductCard key={item.id} id={item.id} image={item.image} title={item.name} price={`$${item.price}`} description={item.description} badge={item.badge} />
+              <ProductCard
+                key={item.id}
+                id={item.id}
+                image={item.image}
+                title={item.name}
+                price={`$${item.price}`}
+                description={item.description}
+                badge={item.badge}
+                onAddToCart={() => addItem(item, 1)}
+              />
             ))}
           </div>
         </section>

@@ -145,13 +145,13 @@ export default function SellOnNuvora() {
                 provides an immersive, customizable environment that respects your
                 brand's aesthetic.
               </p>
-              <button
-                type="button"
+              <Link
+                to="/marketplace"
                 className="text-accent font-label-sm text-label-sm hover:underline flex items-center gap-1"
               >
                 View Showcase Gallery
                 <span className="material-symbols text-sm">arrow_forward</span>
-              </button>
+              </Link>
             </div>
             <div className="absolute right-0 top-0 bottom-0 hidden md:block md:w-1/2">
               <div className="absolute inset-0 bg-gradient-to-r from-surface-container-high/90 to-transparent z-10" />
