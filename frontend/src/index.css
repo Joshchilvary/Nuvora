@@ -250,6 +250,54 @@
   transition: opacity 0.3s ease;
 }
 
-.glow-border:hover::before {
-  opacity: 1;
+.geometric-portal {
+  background-image: repeating-linear-gradient(45deg, rgba(184, 243, 74, 0.03) 0px, rgba(184, 243, 74, 0.03) 2px, transparent 2px, transparent 12px), repeating-linear-gradient(135deg, rgba(184, 243, 74, 0.03) 0px, rgba(184, 243, 74, 0.03) 2px, transparent 2px, transparent 12px);
+  mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
+}
+
+.glow-button {
+  transition: all 0.3s ease;
+}
+.glow-button:hover {
+  box-shadow: 0 0 15px rgba(184, 243, 74, 0.3);
+  border-color: rgba(184, 243, 74, 0.8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .geometric-portal,
+  .geometric-portal *,
+  [class*="animate-"] {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.seller-3d-card {
+  transform: rotateY(-5deg) rotateX(2deg);
+  transition: transform 0.7s ease-out;
+}
+
+.seller-3d-card:hover {
+  transform: rotateY(0deg) rotateX(0deg);
+}
+
+.chart-bar {
+  background-color: rgba(51, 53, 58, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-bar-fill {
+  background-color: rgba(186, 245, 76, 0.85);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transition: height 1s ease-out;
+  box-shadow: 0 0 15px rgba(184, 243, 74, 0.5);
 }

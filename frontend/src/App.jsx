@@ -22,6 +22,12 @@ import Register from "./pages/Register.jsx";
 import PasswordRecovery from "./pages/PasswordRecovery.jsx";
 import PhoneVerification from "./pages/PhoneVerification.jsx";
 import AuthStates from "./pages/AuthStates.jsx";
+import WelcomeToDiscovery from "./pages/WelcomeToDiscovery.jsx";
+import CustomerHub from "./pages/CustomerHub.jsx";
+import SellerLaunchpad from "./pages/SellerLaunchpad.jsx";
+import SellerIntelligence from "./pages/SellerIntelligence.jsx";
+import SellerInventory from "./pages/SellerInventory.jsx";
+import SellerLayout from "./components/layout/SellerLayout.jsx";
 
 export default function App() {
   return (
@@ -48,6 +54,13 @@ export default function App() {
         <Route path="/forgot-password" element={<PasswordRecovery />} />
         <Route path="/verify-phone" element={<PhoneVerification />} />
         <Route path="/auth-states" element={<AuthStates />} />
+      </Route>
+      <Route path="/welcome" element={<WelcomeToDiscovery />} />
+      <Route path="/customer" element={<CustomerHub />} />
+      <Route path="/seller/launchpad" element={<SellerLaunchpad />} />
+      <Route path="/seller" element={<SellerLayout />}>
+        <Route index element={<SellerIntelligence />} />
+        <Route path="inventory" element={<SellerInventory />} />
       </Route>
     </Routes>
   );

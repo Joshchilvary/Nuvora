@@ -40,7 +40,7 @@ export default function SellOnNuvora() {
             Become a Seller
           </Link>
           <Link
-            to="/seller/intelligence"
+            to="/seller"
             className="px-8 py-4 rounded-full glass-panel text-text-primary font-label-sm text-label-sm transition-colors hover:bg-surface-high flex items-center gap-2"
           >
             Explore Analytics
