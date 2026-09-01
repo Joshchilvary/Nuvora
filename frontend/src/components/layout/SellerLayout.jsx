@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import SellerSidebar from "../seller/SellerSidebar.jsx";
 import SellerHeader from "../seller/SellerHeader.jsx";
 import { MOBILE_NAV_ITEMS } from "../seller/SellerSidebar.jsx";
+import { NotificationContext } from "../../pages/SellerNotifications.jsx";
+import { INITIAL_NOTIFICATIONS } from "../../data/sellerNotifications.js";
 
 function navLinkClass({ isActive }) {
   return `flex flex-col items-center justify-center w-full h-full text-xs transition-colors ${
@@ -14,42 +16,56 @@ function navLinkClass({ isActive }) {
 
 export default function SellerLayout() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+
+  const markAsRead = useCallback((id) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+  }, []);
+
+  const markAllAsRead = useCallback(() => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  }, []);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="relative min-h-screen bg-background">
-      {/* Desktop sidebar + Mobile drawer */}
-      <SellerSidebar
-        mobileOpen={mobileNavOpen}
-        onClose={() => setMobileNavOpen(false)}
-      />
+    <NotificationContext.Provider value={{ notifications, markAsRead, markAllAsRead }}>
+      <div className="relative min-h-screen bg-background">
+        <SellerSidebar
+          mobileOpen={mobileNavOpen}
+          onClose={() => setMobileNavOpen(false)}
+          unreadCount={unreadCount}
+        />
 
-      <main className="md:ml-72 min-h-screen flex flex-col">
-        <SellerHeader onMenuClick={() => setMobileNavOpen(true)} />
+        <main className="md:ml-72 min-h-screen flex flex-col">
+          <SellerHeader onMenuClick={() => setMobileNavOpen(true)} unreadCount={unreadCount} />
 
-        <div className="px-4 pb-16 md:px-8 flex-1">
-          <Outlet />
-        </div>
-      </main>
+          <div className="px-4 pb-16 md:px-8 flex-1">
+            <Outlet />
+          </div>
+        </main>
 
-      {/* Mobile bottom navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-[20px] border-t border-outline-variant/20 flex justify-around items-center h-16">
-        {MOBILE_NAV_ITEMS.map((item) => (
-          <NavLink
-            key={item.id}
-            to={item.href}
-            end={item.exact}
-            className={navLinkClass}
-            onClick={() => setMobileNavOpen(false)}
-          >
-            <span
-              className="material-symbols text-2xl"
-              style={{ fontVariationSettings: "'FILL' 1" }}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-[20px] border-t border-outline-variant/20 flex justify-around items-center h-16">
+          {MOBILE_NAV_ITEMS.map((item) => (
+            <NavLink
+              key={item.id}
+              to={item.href}
+              end={item.exact}
+              className={navLinkClass}
+              onClick={() => setMobileNavOpen(false)}
             >
-              {item.icon}
-            </span>
-          </NavLink>
-        ))}
-      </nav>
-    </div>
+              <span
+                className="material-symbols text-2xl"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
+                {item.icon}
+              </span>
+            </NavLink>
+          ))}
+        </nav>
+      </div>
+    </NotificationContext.Provider>
   );
 }

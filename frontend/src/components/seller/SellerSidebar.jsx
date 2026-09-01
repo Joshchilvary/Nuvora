@@ -28,7 +28,7 @@ function navLinkClass({ isActive }) {
   }`;
 }
 
-function SidebarContent({ mobile = false, onClose }) {
+function SidebarContent({ mobile = false, onClose, unreadCount = 0 }) {
   const handleNavClick = mobile ? onClose : undefined;
 
   return (
@@ -68,7 +68,12 @@ function SidebarContent({ mobile = false, onClose }) {
             >
               {item.icon}
             </span>
-            <span className="font-body-md text-body-md">{item.label}</span>
+            <span className="font-body-md text-body-md flex-1">{item.label}</span>
+            {item.id === "notifications" && unreadCount > 0 ? (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-lime px-1.5 text-[10px] font-bold text-obsidian">
+                {unreadCount}
+              </span>
+            ) : null}
           </NavLink>
         ))}
       </nav>
@@ -77,7 +82,7 @@ function SidebarContent({ mobile = false, onClose }) {
       <div className="px-6 mt-auto space-y-3 pb-6">
         {/* View Store */}
         <Link
-          to="/store"
+          to="/seller/store"
           onClick={handleNavClick}
           className="flex items-center justify-between rounded-lg border border-outline-variant/30 bg-surface-high px-4 py-3 font-label-sm text-label-sm text-text-muted transition-colors hover:text-accent hover:bg-surface-highest"
         >
@@ -90,12 +95,12 @@ function SidebarContent({ mobile = false, onClose }) {
             </span>
             <span>View Store</span>
           </div>
-          <span className="text-xs text-text-muted/60">Soon</span>
         </Link>
 
         {/* Add Product */}
-        <button
-          type="button"
+        <Link
+          to="/seller/inventory/new"
+          onClick={handleNavClick}
           className="w-full bg-lime text-obsidian font-label-sm text-label-sm py-3 px-4 rounded-full hover:brightness-110 transition-all flex items-center justify-center shadow-lg"
         >
           <span
@@ -105,7 +110,7 @@ function SidebarContent({ mobile = false, onClose }) {
             add
           </span>
           Add Product
-        </button>
+        </Link>
 
         {/* Back to NUVORA */}
         <Link
@@ -126,12 +131,12 @@ function SidebarContent({ mobile = false, onClose }) {
   );
 }
 
-export default function SellerSidebar({ mobileOpen = false, onClose = () => {} }) {
+export default function SellerSidebar({ mobileOpen = false, onClose = () => {}, unreadCount = 0 }) {
   return (
     <>
       {/* Desktop sidebar — always visible on md+ */}
       <aside className="hidden md:fixed md:left-0 md:top-0 md:bottom-0 md:z-40 md:flex md:w-72 md:flex-col md:py-8 md:bg-surface/90 md:backdrop-blur-[20px] md:rounded-r-xl md:border-r md:border-outline-variant/10 md:shadow-2xl">
-        <SidebarContent />
+        <SidebarContent unreadCount={unreadCount} />
       </aside>
 
       {/* Mobile drawer */}
@@ -154,7 +159,7 @@ export default function SellerSidebar({ mobileOpen = false, onClose = () => {} }
           }`}
         >
           <div className="h-full bg-surface/90 backdrop-blur-[20px] border-r border-outline-variant/10 shadow-2xl">
-            <SidebarContent mobile={true} onClose={onClose} />
+            <SidebarContent mobile={true} onClose={onClose} unreadCount={unreadCount} />
           </div>
         </aside>
       </div>

@@ -27,6 +27,15 @@ import CustomerHub from "./pages/CustomerHub.jsx";
 import SellerLaunchpad from "./pages/SellerLaunchpad.jsx";
 import SellerIntelligence from "./pages/SellerIntelligence.jsx";
 import SellerInventory from "./pages/SellerInventory.jsx";
+import SellerAddProduct from "./pages/SellerAddProduct.jsx";
+import SellerEditProduct from "./pages/SellerEditProduct.jsx";
+import SellerOrders from "./pages/SellerOrders.jsx";
+import SellerOrderDetails from "./pages/SellerOrderDetails.jsx";
+import SellerAnalytics from "./pages/SellerAnalytics.jsx";
+import SellerStore from "./pages/SellerStore.jsx";
+import SellerPayouts from "./pages/SellerPayouts.jsx";
+import SellerNotifications from "./pages/SellerNotifications.jsx";
+import SellerSettings from "./pages/SellerSettings.jsx";
 import SellerLayout from "./components/layout/SellerLayout.jsx";
 
 export default function App() {
@@ -61,6 +70,15 @@ export default function App() {
       <Route path="/seller" element={<SellerLayout />}>
         <Route index element={<SellerIntelligence />} />
         <Route path="inventory" element={<SellerInventory />} />
+        <Route path="orders" element={<SellerOrders />} />
+        <Route path="orders/:orderId" element={<SellerOrderDetails />} />
+        <Route path="analytics" element={<SellerAnalytics />} />
+        <Route path="store" element={<SellerStore />} />
+        <Route path="payouts" element={<SellerPayouts />} />
+        <Route path="notifications" element={<SellerNotifications />} />
+        <Route path="settings" element={<SellerSettings />} />
+        <Route path="inventory/new" element={<SellerAddProduct />} />
+        <Route path="inventory/:productId/edit" element={<SellerEditProduct />} />
       </Route>
     </Routes>
   );
