@@ -13,6 +13,18 @@ export default function ProductCard({
   onAddToCart,
 }) {
   const [favorite, setFavorite] = useState(false);
+  const [added, setAdded] = useState(false);
+  const [popped, setPopped] = useState(false);
+  const [flyKey, setFlyKey] = useState(0);
+
+  const handleAddToCart = () => {
+    onAddToCart?.();
+    setAdded(true);
+    setPopped(true);
+    setTimeout(() => setPopped(false), 500);
+    setFlyKey((k) => k + 1);
+    setTimeout(() => setAdded(false), 1500);
+  };
 
   return (
     <article className="group relative overflow-hidden rounded-2xl bg-surface shadow-sm ring-1 ring-outline-variant/20 transition-shadow hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
@@ -69,13 +81,33 @@ export default function ProductCard({
             <Badge variant="lime">{badge}</Badge>
           </div>
         ) : null}
-        <Button
-          variant="outline"
-          className="relative z-10 w-full"
-          onClick={onAddToCart}
-        >
-          Add to Cart
-        </Button>
+        <div className="relative z-10">
+          <Button
+            variant="outline"
+            className={`w-full ${popped ? "animate-add-pop" : ""}`}
+            onClick={handleAddToCart}
+          >
+            {added ? (
+              <>
+                <span className="material-symbols text-sm">check_circle</span>
+                Added!
+              </>
+            ) : (
+              <>
+                <span className="material-symbols text-sm">shopping_cart</span>
+                Add to Cart
+              </>
+            )}
+          </Button>
+          {added && (
+            <span
+              key={flyKey}
+              className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl text-lime material-symbols animate-fly-to-cart"
+            >
+              shopping_cart
+            </span>
+          )}
+        </div>
       </div>
     </article>
   );

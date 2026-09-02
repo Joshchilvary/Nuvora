@@ -39,6 +39,9 @@ export default function ProductDetails() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
+  const [added, setAdded] = useState(false);
+  const [popped, setPopped] = useState(false);
+  const [flyKey, setFlyKey] = useState(0);
   const { addItem } = useCart();
 
   const handleBack = () => {
@@ -178,12 +181,39 @@ export default function ProductDetails() {
 
           <div className="mb-12 flex flex-wrap items-center gap-4">
             <QuantityStepper value={quantity} onChange={setQuantity} />
-            <Button
-              className="flex-1 rounded-xl px-8 py-4"
-              onClick={() => addItem(product, quantity)}
-            >
-              Add to Cart
-            </Button>
+            <div className="relative flex-1">
+              <Button
+                className={`w-full rounded-xl px-8 py-4 ${popped ? "animate-add-pop" : ""}`}
+                onClick={() => {
+                  addItem(product, quantity);
+                  setAdded(true);
+                  setPopped(true);
+                  setTimeout(() => setPopped(false), 500);
+                  setFlyKey((k) => k + 1);
+                  setTimeout(() => setAdded(false), 1500);
+                }}
+              >
+                {added ? (
+                  <>
+                    <span className="material-symbols text-sm">check_circle</span>
+                    Added!
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols text-sm">shopping_cart</span>
+                    Add to Cart
+                  </>
+                )}
+              </Button>
+              {added && (
+                <span
+                  key={flyKey}
+                  className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl text-lime material-symbols animate-fly-to-cart"
+                >
+                  shopping_cart
+                </span>
+              )}
+            </div>
             <button
               onClick={() => setFavorite((prev) => !prev)}
               className={`flex h-14 w-14 items-center justify-center rounded-xl border transition-colors ${

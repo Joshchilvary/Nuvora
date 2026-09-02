@@ -24,6 +24,14 @@ import PhoneVerification from "./pages/PhoneVerification.jsx";
 import AuthStates from "./pages/AuthStates.jsx";
 import WelcomeToDiscovery from "./pages/WelcomeToDiscovery.jsx";
 import CustomerHub from "./pages/CustomerHub.jsx";
+import CustomerOrders from "./pages/CustomerOrders.jsx";
+import CustomerOrderDetails from "./pages/CustomerOrderDetails.jsx";
+import CustomerWishlist from "./pages/CustomerWishlist.jsx";
+import CustomerNotifications from "./pages/CustomerNotifications.jsx";
+import CustomerSettings from "./pages/CustomerSettings.jsx";
+import CustomerProfile from "./pages/CustomerProfile.jsx";
+import CustomerReviews from "./pages/CustomerReviews.jsx";
+import CustomerLayout from "./components/layout/CustomerLayout.jsx";
 import SellerLaunchpad from "./pages/SellerLaunchpad.jsx";
 import SellerIntelligence from "./pages/SellerIntelligence.jsx";
 import SellerInventory from "./pages/SellerInventory.jsx";
@@ -65,7 +73,16 @@ export default function App() {
         <Route path="/auth-states" element={<AuthStates />} />
       </Route>
       <Route path="/welcome" element={<WelcomeToDiscovery />} />
-      <Route path="/customer" element={<CustomerHub />} />
+      <Route path="/customer" element={<CustomerLayout />}>
+        <Route index element={<CustomerHub />} />
+        <Route path="orders" element={<CustomerOrders />} />
+        <Route path="orders/:orderId" element={<CustomerOrderDetails />} />
+        <Route path="wishlist" element={<CustomerWishlist />} />
+        <Route path="notifications" element={<CustomerNotifications />} />
+        <Route path="settings" element={<CustomerSettings />} />
+        <Route path="profile" element={<CustomerProfile />} />
+        <Route path="reviews" element={<CustomerReviews />} />
+      </Route>
       <Route path="/seller/launchpad" element={<SellerLaunchpad />} />
       <Route path="/seller" element={<SellerLayout />}>
         <Route index element={<SellerIntelligence />} />
