@@ -1,39 +1,98 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import FilterSidebar from "../components/marketplace/FilterSidebar.jsx";
 import SearchBar from "../components/marketplace/SearchBar.jsx";
 import ProductGrid from "../components/marketplace/ProductGrid.jsx";
-import { PRODUCTS } from "../data/products.js";
 import { useCart } from "../context/CartContext.jsx";
+import { getCategories, getProducts } from "../services/api/marketplace.js";
 
 export default function Marketplace() {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All Products");
+  const [category, setCategory] = useState("");
   const [maxPrice, setMaxPrice] = useState(1000);
+  const [minPrice, setMinPrice] = useState("");
+  const [sort, setSort] = useState("newest");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { addItem } = useCart();
 
-  const filtered = useMemo(() => {
-    const term = query.trim().toLowerCase();
-    return PRODUCTS.filter((product) => {
-      const matchesCategory =
-        category === "All Products" || product.category === category;
-      const matchesPrice = product.price <= maxPrice;
-      const matchesQuery =
-        term === "" ||
-        `${product.name} ${product.description}`.toLowerCase().includes(term);
-      return matchesCategory && matchesPrice && matchesQuery;
-    });
-  }, [query, category, maxPrice]);
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError(null);
+
+    getCategories()
+      .then((data) => {
+        if (!active) return;
+        setCategories(data);
+      })
+      .catch((err) => {
+        if (!active) return;
+        setError(err.message || "Failed to load categories");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError(null);
+
+    const params = {
+      search: query.trim() || undefined,
+      category: category || undefined,
+      min_price: minPrice !== "" ? Number(minPrice) : undefined,
+      max_price: maxPrice < 1000 ? maxPrice : undefined,
+      ordering: sort,
+    };
+
+    getProducts(params)
+      .then((data) => {
+        if (!active) return;
+        setProducts(data.results);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (!active) return;
+        setError(err.message || "Failed to load products");
+        setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [query, category, maxPrice, minPrice, sort]);
+
+  const displayCategories = useMemo(() => {
+    const list = categories
+      .filter((item) => !item.parent)
+      .map((item) => item.name);
+    return ["All Products", ...list];
+  }, [categories]);
+
+  const handleCategoryChange = (name) => {
+    setCategory(name === "All Products" ? "" : name);
+  };
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
       <aside className="hidden md:col-span-3 md:block">
         <div className="sticky top-28">
           <FilterSidebar
+            categories={displayCategories}
             selectedCategory={category}
-            onSelectCategory={setCategory}
+            onSelectCategory={handleCategoryChange}
             maxPrice={maxPrice}
             onMaxPriceChange={setMaxPrice}
+            minPrice={minPrice}
+            onMinPriceChange={setMinPrice}
+            sort={sort}
+            onSortChange={setSort}
           />
         </div>
       </aside>
@@ -76,18 +135,30 @@ export default function Marketplace() {
         {mobileFiltersOpen ? (
           <div className="md:hidden">
             <FilterSidebar
+              categories={displayCategories}
               selectedCategory={category}
-              onSelectCategory={setCategory}
+              onSelectCategory={handleCategoryChange}
               maxPrice={maxPrice}
               onMaxPriceChange={setMaxPrice}
+              minPrice={minPrice}
+              onMinPriceChange={setMinPrice}
+              sort={sort}
+              onSortChange={setSort}
             />
           </div>
         ) : null}
 
-        <ProductGrid
-          products={filtered}
-          onAddToCart={(product) => addItem(product, 1)}
-        />
+        {error ? (
+          <div className="rounded-2xl border border-outline-variant/20 bg-surface p-12 text-center text-text-muted">
+            <p>{error}</p>
+          </div>
+        ) : (
+          <ProductGrid
+            products={products}
+            loading={loading}
+            onAddToCart={(product) => addItem(product, 1)}
+          />
+        )}
       </div>
     </div>
   );
