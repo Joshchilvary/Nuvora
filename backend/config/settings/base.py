@@ -5,6 +5,8 @@ from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
 
+from config.cloudinary import configure_cloudinary
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 load_dotenv(BASE_DIR / ".env")
 
@@ -97,6 +99,8 @@ STATIC_URL = "static/"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+configure_cloudinary()
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

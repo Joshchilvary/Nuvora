@@ -1,13 +1,64 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
+from PIL import Image
+
+
+ALLOWED_IMAGE_FORMATS = {"JPEG", "JPG", "PNG", "WEBP"}
+MAX_IMAGE_FILE_SIZE = 8 * 1024 * 1024  # 8 MB
+MAX_IMAGE_DIMENSION = 6000  # pixels
+
+
+def validate_product_image(file):
+    """Validate an uploaded product image.
+
+    Server-side validation ensures uploaded files are genuine images, are
+    within reasonable size/dimension limits, and use supported formats.
+    This protects against malformed uploads, storage abuse, and accidental
+    non-image uploads.
+    """
+    if file is None:
+        return
+
+    if file.size and file.size > MAX_IMAGE_FILE_SIZE:
+        raise ValidationError(
+            f"Image file is too large. Maximum size is {MAX_IMAGE_FILE_SIZE // (1024 * 1024)} MB."
+        )
+
+    try:
+        file.seek(0)
+        with Image.open(file) as img:
+            img.verify()
+        file.seek(0)
+        with Image.open(file) as img:
+            format_name = (img.format or "").upper()
+            if format_name not in ALLOWED_IMAGE_FORMATS:
+                raise ValidationError(
+                    f"Unsupported image format '{format_name}'. "
+                    f"Allowed formats: {', '.join(sorted(ALLOWED_IMAGE_FORMATS))}."
+                )
+            width, height = img.size
+            if max(width, height) > MAX_IMAGE_DIMENSION:
+                raise ValidationError(
+                    f"Image dimensions too large ({width}x{height}). "
+                    f"Maximum dimension is {MAX_IMAGE_DIMENSION}px."
+                )
+    except ValidationError:
+        raise
+    except Exception:
+        raise ValidationError("Uploaded file is not a valid image.")
+    finally:
+        try:
+            file.seek(0)
+        except Exception:
+            pass
 
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
     description = models.TextField(blank=True)
-    image = models.ImageField(upload_to="categories/", blank=True, null=True)
+    image = models.ImageField(upload_to="categories/", blank=True, null=True, validators=[validate_product_image])
     parent = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
@@ -99,7 +150,7 @@ class ProductImage(models.Model):
         on_delete=models.CASCADE,
         related_name="images",
     )
-    image = models.ImageField(upload_to="products/")
+    image = models.ImageField(upload_to="products/", validators=[validate_product_image])
     alt_text = models.CharField(max_length=255, blank=True)
     display_order = models.IntegerField(default=0)
     is_primary = models.BooleanField(default=False)
@@ -113,6 +164,11 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - Image {self.id}"
+
+    def clean(self):
+        super().clean()
+        if self.image:
+            validate_product_image(self.image)
 
 
 class Wishlist(models.Model):

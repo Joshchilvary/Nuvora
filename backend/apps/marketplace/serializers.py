@@ -4,6 +4,28 @@ from apps.users.models import SellerProfile
 from .models import Category, Product, ProductImage
 
 
+def absolute_image_url(image_field, request=None):
+    """Return an absolute URL for an image field, or None.
+
+    Works with both local storage and Cloudinary because Cloudinary's
+    ImageField returns a full Cloudinary URL string while local storage
+    returns a relative path under MEDIA_URL.
+    """
+    if not image_field:
+        return None
+    try:
+        url = image_field.url
+    except Exception:
+        return None
+    if not url:
+        return None
+    if url.startswith("http://") or url.startswith("https://"):
+        return url
+    if request is not None:
+        return request.build_absolute_uri(url)
+    return url
+
+
 class SellerSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = SellerProfile
@@ -13,10 +35,14 @@ class SellerSummarySerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     parent = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
         fields = ["id", "name", "slug", "description", "image", "parent", "children"]
+
+    def get_image(self, obj):
+        return absolute_image_url(obj.image, request=self.context.get("request"))
 
     def get_parent(self, obj):
         if obj.parent:
@@ -40,9 +66,14 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductImage
         fields = ["id", "image", "alt_text", "display_order", "is_primary"]
+
+    def get_image(self, obj):
+        return absolute_image_url(obj.image, request=self.context.get("request"))
 
 
 class ProductListSerializer(serializers.ModelSerializer):
