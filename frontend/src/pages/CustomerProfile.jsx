@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CUSTOMER_ACCOUNT } from "../data/customerSettings.js";
+import { useAuth } from "../context/AuthContext.jsx";
 import { CUSTOMER_PROFILE } from "../data/customerDashboard.js";
 import { MOCK_ADDRESSES, ACCOUNT_INFO } from "../data/customerProfile.js";
 import Button from "../components/ui/Button.jsx";
@@ -260,13 +260,14 @@ function AddressModal({ open, address, onSave, onCancel }) {
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const fileInputRef = useRef(null);
 
   const [profile, setProfile] = useState({
-    firstName: CUSTOMER_ACCOUNT.fullName.split(" ")[0],
-    lastName: CUSTOMER_ACCOUNT.fullName.split(" ").slice(1).join(" "),
-    email: CUSTOMER_ACCOUNT.email,
-    phone: CUSTOMER_ACCOUNT.phone,
+    firstName: user?.firstName?.split(" ")[0] || CUSTOMER_PROFILE.name.split(" ")[0],
+    lastName: user?.lastName || CUSTOMER_PROFILE.name.split(" ").slice(1).join(" "),
+    email: user?.email || "",
+    phone: user?.phoneNumber || "",
     dob: "1990-05-15",
     gender: "male",
   });
@@ -279,14 +280,9 @@ export default function CustomerProfile() {
   const [saved, setSaved] = useState(false);
   const [toast, setToast] = useState(null);
 
-  const showToast = (message) => {
-    setToast(message);
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  const handleProfileChange = (field, value) => {
-    setProfile((prev) => ({ ...prev, [field]: value }));
-  };
+  const displayName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : CUSTOMER_PROFILE.name;
+  const avatar = avatarPreview || user?.profilePicture || CUSTOMER_PROFILE.avatar;
+  const isVerified = user?.isVerified ?? false;
 
   const handleSaveProfile = () => {
     setEditing(false);
@@ -367,7 +363,7 @@ export default function CustomerProfile() {
     showToast("Default address updated.");
   };
 
-  const currentAvatar = avatarPreview || CUSTOMER_ACCOUNT.avatar;
+  const currentAvatar = avatarPreview || user?.profilePicture || CUSTOMER_PROFILE.avatar;
 
   return (
     <div className="flex flex-col min-h-full">
@@ -446,25 +442,25 @@ export default function CustomerProfile() {
           <div className="flex flex-col md:flex-row items-start gap-6">
             <div className="shrink-0">
               <div className="relative h-24 w-24 md:h-32 md:w-32 rounded-full overflow-hidden border-2 border-lime/30 shadow-[0_0_20px_rgba(184,243,74,0.15)]">
-                <img
-                  src={currentAvatar}
-                  alt={CUSTOMER_ACCOUNT.fullName}
-                  className="h-full w-full object-cover"
-                />
+                 <img
+                   src={currentAvatar}
+                   alt={displayName}
+                   className="h-full w-full object-cover"
+                 />
               </div>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                  <h3 className="font-h4 text-h4 text-text-primary">{CUSTOMER_ACCOUNT.fullName}</h3>
+                  <h3 className="font-h4 text-h4 text-text-primary">{displayName}</h3>
                   <p className="font-body-md text-body-md text-text-muted mt-1">
-                    {CUSTOMER_ACCOUNT.email}
+                    {profile.email}
                   </p>
                   <p className="font-body-md text-body-md text-text-muted">
-                    {CUSTOMER_ACCOUNT.phone}
+                    {profile.phone}
                   </p>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    {CUSTOMER_ACCOUNT.verified ? (
+                    {isVerified ? (
                       <span className="inline-flex items-center gap-1 rounded-full border border-lime/30 bg-lime/10 px-2.5 py-1 text-xs font-semibold text-accent">
                         <span
                           className="material-symbols text-xs"
@@ -516,11 +512,11 @@ export default function CustomerProfile() {
         <Section title="Profile Picture" description="Update your profile photo.">
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="relative h-28 w-28 shrink-0 rounded-full overflow-hidden border-2 border-outline-variant/30 shadow-lg">
-              <img
-                src={currentAvatar}
-                alt={CUSTOMER_ACCOUNT.fullName}
-                className="h-full w-full object-cover"
-              />
+                 <img
+                   src={currentAvatar}
+                   alt={displayName}
+                   className="h-full w-full object-cover"
+                 />
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-3">
               <input
@@ -721,7 +717,7 @@ export default function CustomerProfile() {
                 </div>
                 <div>
                   <p className="font-label-sm text-label-sm text-text-primary">Email Address</p>
-                  <p className="font-body-md text-sm text-text-muted">{CUSTOMER_ACCOUNT.email}</p>
+                  <p className="font-body-md text-sm text-text-muted">{profile.email}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 sm:justify-end">
@@ -749,7 +745,7 @@ export default function CustomerProfile() {
                 </div>
                 <div>
                   <p className="font-label-sm text-label-sm text-text-primary">Phone Number</p>
-                  <p className="font-body-md text-sm text-text-muted">{CUSTOMER_ACCOUNT.phone}</p>
+                  <p className="font-body-md text-sm text-text-muted">{profile.phone}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 sm:justify-end">

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { requestPasswordReset, confirmPasswordReset } from "../services/api/auth.js";
 
 function getPasswordStrength(password) {
   if (!password) return { level: 0, label: "", bars: [false, false, false, false] };
@@ -27,8 +28,9 @@ export default function PasswordRecovery() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "", confirmPassword: "" });
+  const [form, setForm] = useState({ email: "", token: "", password: "", confirmPassword: "" });
   const [errors, setErrors] = useState({});
+  const [generalError, setGeneralError] = useState("");
 
   const strength = useMemo(() => getPasswordStrength(form.password), [form.password]);
 
@@ -37,6 +39,7 @@ export default function PasswordRecovery() {
     if (!form.email.trim()) next.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = "Enter a valid email";
     setErrors(next);
+    setGeneralError("");
     return Object.keys(next).length === 0;
   };
 
@@ -46,28 +49,60 @@ export default function PasswordRecovery() {
     else if (form.password.length < 6) next.password = "Password must be at least 6 characters";
     if (!form.confirmPassword) next.confirmPassword = "Please confirm your password";
     else if (form.confirmPassword !== form.password) next.confirmPassword = "Passwords do not match";
+    if (!form.token.trim()) next.token = "Verification code is required";
     setErrors(next);
+    setGeneralError("");
     return Object.keys(next).length === 0;
   };
 
-  const handleRequest = (event) => {
+  const handleRequest = async (event) => {
     event.preventDefault();
     if (!validateEmail()) return;
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    setGeneralError("");
+    try {
+      await requestPasswordReset({ email: form.email });
       setScreen("sent");
-    }, 1200);
+    } catch (error) {
+      if (error.message) {
+        setGeneralError(error.message);
+      } else {
+        setGeneralError("Unable to send recovery link. Please try again.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleReset = (event) => {
+  const handleReset = async (event) => {
     event.preventDefault();
     if (!validatePassword()) return;
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    setGeneralError("");
+    try {
+      await confirmPasswordReset({
+        token: form.token.trim(),
+        password: form.password,
+        passwordConfirm: form.confirmPassword,
+      });
       setScreen("confirmed");
-    }, 1200);
+    } catch (error) {
+      const data = error.data;
+      if (data) {
+        const next = {};
+        if (data.token) next.token = Array.isArray(data.token) ? data.token[0] : data.token;
+        if (data.password) next.password = Array.isArray(data.password) ? data.password[0] : data.password;
+        if (data.password_confirm) next.confirmPassword = Array.isArray(data.password_confirm) ? data.password_confirm[0] : data.password_confirm;
+        setErrors(next);
+        setGeneralError(next.token || next.password || next.confirmPassword || "Unable to reset password. Please try again.");
+      } else if (error.message) {
+        setGeneralError(error.message);
+      } else {
+        setGeneralError("Unable to reset password. Please try again.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const update = (field) => (event) => {
@@ -77,6 +112,7 @@ export default function PasswordRecovery() {
       delete next[field];
       return next;
     });
+    setGeneralError("");
   };
 
   const strengthColor =
@@ -136,6 +172,11 @@ export default function PasswordRecovery() {
 
           {screen === "request" && (
             <form onSubmit={handleRequest} className="space-y-5">
+              {generalError ? (
+                <div className="rounded-lg border border-red-400/50 bg-red-500/10 p-3">
+                  <p className="font-label-sm text-label-sm text-red-400">{generalError}</p>
+                </div>
+              ) : null}
               <div className="space-y-2">
                 <label
                   className="font-label-sm text-label-sm text-text-muted ml-1"
@@ -234,6 +275,33 @@ export default function PasswordRecovery() {
 
           {screen === "reset" && (
             <form onSubmit={handleReset} className="space-y-5">
+              {generalError ? (
+                <div className="rounded-lg border border-red-400/50 bg-red-500/10 p-3">
+                  <p className="font-label-sm text-label-sm text-red-400">{generalError}</p>
+                </div>
+              ) : null}
+              <div className="space-y-2">
+                <label
+                  className="font-label-sm text-label-sm text-text-muted ml-1"
+                  htmlFor="reset-token"
+                >
+                  Verification Code
+                </label>
+                <input
+                  id="reset-token"
+                  type="text"
+                  value={form.token}
+                  onChange={update("token")}
+                  placeholder="Paste code from email"
+                  className={`w-full rounded-lg border bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime ${
+                    errors.token ? "border-red-400" : "border-outline-variant/30"
+                  }`}
+                />
+                {errors.token && (
+                  <p className="mt-1 text-sm text-red-400">{errors.token}</p>
+                )}
+              </div>
+
               <div className="space-y-2">
                 <label
                   className="font-label-sm text-label-sm text-text-muted ml-1"

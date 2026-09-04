@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import {
   CUSTOMER_PROFILE,
   CUSTOMER_STATS,
@@ -116,6 +117,8 @@ function SavedProductCard({ product, onAddToCart }) {
 
 export default function CustomerHub() {
   const { addItem } = useCart();
+  const { user } = useAuth();
+  const firstName = user?.firstName?.split(" ")[0] || CUSTOMER_PROFILE.name.split(" ")[0];
 
   const handleAddToCart = (product) => {
     addItem(product, 1);
@@ -127,7 +130,7 @@ export default function CustomerHub() {
           {/* Header */}
           <header className="mb-10">
             <h2 className="font-h2 text-h2 text-text-primary mb-2">
-              Welcome back, {CUSTOMER_PROFILE.name.split(" ")[0]}.
+              Welcome back, {firstName}.
             </h2>
             <p className="font-body-lg text-body-lg text-text-muted">
               Here is your dimensional discovery overview.

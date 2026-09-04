@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { verifyEmail, resendVerification } from "../services/api/auth.js";
 
-const OTP_LENGTH = 6;
 const RESEND_SECONDS = 45;
 
 function formatTime(seconds) {
@@ -12,13 +12,13 @@ function formatTime(seconds) {
 
 export default function PhoneVerification() {
   const navigate = useNavigate();
-  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
+  const [token, setToken] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [resendTimer, setResendTimer] = useState(RESEND_SECONDS);
   const [canResend, setCanResend] = useState(false);
-  const inputsRef = useRef([]);
+  const [generalError, setGeneralError] = useState("");
 
   useEffect(() => {
     if (resendTimer <= 0) {
@@ -29,70 +29,39 @@ export default function PhoneVerification() {
     return () => clearTimeout(id);
   }, [resendTimer]);
 
-  const focusIndex = useCallback((index) => {
-    const el = inputsRef.current[index];
-    if (el) el.focus();
-  }, []);
-
-  const handleChange = (index, value) => {
-    const digit = value.replace(/\D/g, "").slice(-1);
-    const next = [...otp];
-    next[index] = digit;
-    setOtp(next);
-    setError("");
-
-    if (digit && index < OTP_LENGTH - 1) {
-      focusIndex(index + 1);
-    }
-  };
-
-  const handleKeyDown = (index, event) => {
-    if (event.key === "Backspace" && !otp[index] && index > 0) {
-      focusIndex(index - 1);
-    }
-  };
-
-  const handlePaste = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const paste = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH);
-    if (!paste) return;
-    const next = [...otp];
-    for (let i = 0; i < paste.length; i++) {
-      next[i] = paste[i];
+    if (!token.trim()) {
+      setError("Please enter your verification code.");
+      return;
     }
-    setOtp(next);
-    setError("");
-    const nextEmpty = next.findIndex((v) => v === "");
-    if (nextEmpty === -1) focusIndex(OTP_LENGTH - 1);
-    else focusIndex(nextEmpty);
-  };
-
-  const validate = () => {
-    if (otp.some((d) => d === "")) {
-      setError("Please enter the full 6-digit code.");
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (!validate()) return;
     setSubmitting(true);
     setError("");
-    setTimeout(() => {
-      setSubmitting(false);
+    setGeneralError("");
+    try {
+      const data = await verifyEmail({ token: token.trim() });
       setSuccess(true);
-    }, 1200);
+      return data;
+    } catch (err) {
+      const message = err.data?.detail || err.message || "Verification failed. Please try again.";
+      setGeneralError(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleResend = () => {
-    setOtp(Array(OTP_LENGTH).fill(""));
-    setResendTimer(RESEND_SECONDS);
-    setCanResend(false);
+  const handleResend = async () => {
+    setGeneralError("");
     setError("");
-    setSuccess(false);
-    setTimeout(() => focusIndex(0), 50);
+    try {
+      await resendVerification({ email: "" });
+    } catch {
+      // ignore resend errors, backend intentionally returns generic message
+    } finally {
+      setResendTimer(RESEND_SECONDS);
+      setCanResend(false);
+      setToken("");
+    }
   };
 
   return (
@@ -119,18 +88,13 @@ export default function PhoneVerification() {
               </span>
             </div>
             <h1 className="font-headline-sm text-headline-sm text-text-primary mb-2">
-              {success ? "Phone Verified" : "Verifying identity"}
+              {success ? "Email Verified" : "Verify your email"}
             </h1>
             <p className="font-body-md text-body-md text-text-muted">
               {success
-                ? "Your phone number has been verified."
-                : "Enter the 6-digit code sent to"}
+                ? "Your email has been verified."
+                : "Enter the verification code sent to your email."}
             </p>
-            {!success && (
-              <p className="mt-1 font-label-md text-label-md text-text-primary">
-                +1 (555) 019-2834
-              </p>
-            )}
           </div>
 
           {success && (
@@ -162,28 +126,31 @@ export default function PhoneVerification() {
 
           {!success && (
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="flex justify-between gap-2">
-                {Array.from({ length: OTP_LENGTH }).map((_, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => (inputsRef.current[index] = el)}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={otp[index]}
-                    onChange={(e) => handleChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    onPaste={handlePaste}
-                    className={`w-full rounded-lg border bg-surface-low px-2 py-3 text-center font-mono-auth text-mono-auth text-text-primary outline-none transition-all focus:border-lime ${
-                      error && otp[index] === "" ? "border-red-400" : "border-outline-variant/30"
-                    }`}
-                  />
-                ))}
+              <div className="space-y-2">
+                <label
+                  className="font-label-sm text-label-sm text-text-muted ml-1"
+                  htmlFor="verify-token"
+                >
+                  Verification Code
+                </label>
+                <input
+                  id="verify-token"
+                  type="text"
+                  value={token}
+                  onChange={(e) => {
+                    setToken(e.target.value);
+                    setError("");
+                    setGeneralError("");
+                  }}
+                  placeholder="Enter verification code"
+                  className={`w-full rounded-lg border bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime ${
+                    error ? "border-red-400" : "border-outline-variant/30"
+                  }`}
+                />
+                {(error || generalError) && (
+                  <p className="text-sm text-red-400">{error || generalError}</p>
+                )}
               </div>
-
-              {error && (
-                <p className="text-center text-sm text-red-400">{error}</p>
-              )}
 
               <button
                 type="submit"

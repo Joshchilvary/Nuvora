@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext.jsx";
 import { useCart } from "../../context/CartContext.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { CUSTOMER_PROFILE } from "../../data/customerDashboard.js";
 import { INITIAL_CUSTOMER_NOTIFICATIONS } from "../../data/customerNotifications.js";
 import { CustomerNotificationContext } from "../../pages/CustomerNotifications.jsx";
@@ -25,10 +26,23 @@ function navLinkClass({ isActive }) {
 }
 
 export default function CustomerLayout() {
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { totalItems } = useCart();
+  const { user, logout } = useAuth();
   const [notifications, setNotifications] = useState(INITIAL_CUSTOMER_NOTIFICATIONS);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+
+  const displayName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : CUSTOMER_PROFILE.name;
+  const avatar = user?.profilePicture || CUSTOMER_PROFILE.avatar;
+  const tier = user?.isVerified ? "Verified Customer" : CUSTOMER_PROFILE.tier;
+
+  const handleLogout = async () => {
+    setLogoutConfirmOpen(false);
+    await logout();
+    navigate("/", { replace: true });
+  };
 
   const markAsRead = useCallback((id) => {
     setNotifications((prev) =>
@@ -85,11 +99,11 @@ export default function CustomerLayout() {
 
         <div className="px-8 mb-8 flex items-center gap-4">
           <div className="h-12 w-12 rounded-full overflow-hidden border border-outline-variant/30">
-            <img src={CUSTOMER_PROFILE.avatar} alt="Profile" className="h-full w-full object-cover" />
+            <img src={avatar} alt="Profile" className="h-full w-full object-cover" />
           </div>
           <div>
-            <p className="font-label-sm text-label-sm text-text-primary">{CUSTOMER_PROFILE.name}</p>
-            <p className="font-body-md text-xs text-text-muted">{CUSTOMER_PROFILE.tier}</p>
+            <p className="font-label-sm text-label-sm text-text-primary">{displayName}</p>
+            <p className="font-body-md text-xs text-text-muted">{tier}</p>
           </div>
         </div>
 
@@ -126,6 +140,16 @@ export default function CustomerLayout() {
         </nav>
 
         <div className="px-8 flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={() => setLogoutConfirmOpen(true)}
+            className="flex w-full items-center justify-center rounded-lg border border-outline-variant/30 py-3 font-label-sm text-label-sm text-text-muted transition-colors hover:text-accent hover:bg-surface-high"
+          >
+            <span className="material-symbols mr-2 text-sm" style={{ fontVariationSettings: "'FILL' 0" }}>
+              logout
+            </span>
+            Log Out
+          </button>
           <Link
             to="/marketplace"
             className="flex w-full items-center justify-center rounded-lg bg-lime py-3 font-label-sm text-label-sm text-obsidian hover:brightness-110 transition-all"
@@ -191,7 +215,7 @@ export default function CustomerLayout() {
               </span>
             </button>
             <div className="h-9 w-9 rounded-full overflow-hidden border border-outline-variant/30">
-              <img src={CUSTOMER_PROFILE.avatar} alt="Profile" className="h-full w-full object-cover" />
+              <img src={avatar} alt="Profile" className="h-full w-full object-cover" />
             </div>
           </div>
         </header>
@@ -201,6 +225,38 @@ export default function CustomerLayout() {
         </div>
       </main>
     </div>
+    {logoutConfirmOpen && (
+      <div
+        className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Log Out"
+      >
+        <div className="absolute inset-0 bg-obsidian/70 backdrop-blur-sm" onClick={() => setLogoutConfirmOpen(false)} />
+        <div className="relative w-full max-w-md rounded-xl border border-outline-variant/20 bg-surface-container p-6 shadow-2xl">
+          <h3 className="font-h4 text-h4 text-text-primary mb-2">Log Out?</h3>
+          <p className="font-body-md text-body-md text-text-muted mb-6">
+            You will be signed out of your account and redirected to the home page.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-end">
+            <button
+              type="button"
+              onClick={() => setLogoutConfirmOpen(false)}
+              className="rounded-lg border border-outline-variant/40 px-5 py-2.5 font-semibold text-sm text-text-primary transition-colors hover:bg-surface-high"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="rounded-lg bg-lime px-5 py-2.5 font-semibold text-sm text-obsidian transition-all hover:brightness-110"
+            >
+              Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </CustomerNotificationContext.Provider>
   );
 }

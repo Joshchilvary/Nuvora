@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
-import Button from "../ui/Button.jsx";
 import Container from "../layout/Container.jsx";
 import MobileMenu from "./MobileMenu.jsx";
+import AccountMenu from "./AccountMenu.jsx";
 import { useTheme } from "../../context/ThemeContext.jsx";
 import { useCart } from "../../context/CartContext.jsx";
 
@@ -77,12 +77,7 @@ export default function Navbar() {
             )}
           </Link>
 
-          <Link
-            to="/login"
-            className="hidden md:inline-flex"
-          >
-            <Button size="sm">Account</Button>
-          </Link>
+          <AccountMenu className="hidden md:inline-flex" />
 
           <button
             className="text-text-muted transition-colors hover:text-accent md:hidden"

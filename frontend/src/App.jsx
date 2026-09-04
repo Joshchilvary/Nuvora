@@ -45,6 +45,17 @@ import SellerPayouts from "./pages/SellerPayouts.jsx";
 import SellerNotifications from "./pages/SellerNotifications.jsx";
 import SellerSettings from "./pages/SellerSettings.jsx";
 import SellerLayout from "./components/layout/SellerLayout.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
+import AdminUsers from "./pages/AdminUsers.jsx";
+import AdminSellers from "./pages/AdminSellers.jsx";
+import AdminProducts from "./pages/AdminProducts.jsx";
+import AdminOrders from "./pages/AdminOrders.jsx";
+import AdminReviews from "./pages/AdminReviews.jsx";
+import AdminSecurity from "./pages/AdminSecurity.jsx";
+import AdminAuditLogs from "./pages/AdminAuditLogs.jsx";
+import AdminSettings from "./pages/AdminSettings.jsx";
+import AdminLayout from "./components/layout/AdminLayout.jsx";
+import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 
 export default function App() {
   return (
@@ -73,7 +84,7 @@ export default function App() {
         <Route path="/auth-states" element={<AuthStates />} />
       </Route>
       <Route path="/welcome" element={<WelcomeToDiscovery />} />
-      <Route path="/customer" element={<CustomerLayout />}>
+      <Route path="/customer" element={<ProtectedRoute><CustomerLayout /></ProtectedRoute>}>
         <Route index element={<CustomerHub />} />
         <Route path="orders" element={<CustomerOrders />} />
         <Route path="orders/:orderId" element={<CustomerOrderDetails />} />
@@ -84,7 +95,7 @@ export default function App() {
         <Route path="reviews" element={<CustomerReviews />} />
       </Route>
       <Route path="/seller/launchpad" element={<SellerLaunchpad />} />
-      <Route path="/seller" element={<SellerLayout />}>
+      <Route path="/seller" element={<ProtectedRoute><SellerLayout /></ProtectedRoute>}>
         <Route index element={<SellerIntelligence />} />
         <Route path="inventory" element={<SellerInventory />} />
         <Route path="orders" element={<SellerOrders />} />
@@ -96,6 +107,17 @@ export default function App() {
         <Route path="settings" element={<SellerSettings />} />
         <Route path="inventory/new" element={<SellerAddProduct />} />
         <Route path="inventory/:productId/edit" element={<SellerEditProduct />} />
+      </Route>
+      <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="sellers" element={<AdminSellers />} />
+        <Route path="products" element={<AdminProducts />} />
+        <Route path="orders" element={<AdminOrders />} />
+        <Route path="reviews" element={<AdminReviews />} />
+        <Route path="security" element={<AdminSecurity />} />
+        <Route path="audit-logs" element={<AdminAuditLogs />} />
+        <Route path="settings" element={<AdminSettings />} />
       </Route>
     </Routes>
   );

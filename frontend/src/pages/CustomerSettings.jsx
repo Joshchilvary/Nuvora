@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
+import { changePassword as apiChangePassword, logoutUser as apiLogout } from "../services/api/auth.js";
 import {
-  CUSTOMER_ACCOUNT,
   LANGUAGE_OPTIONS,
   CURRENCY_OPTIONS,
   REGION_OPTIONS,
@@ -136,14 +137,38 @@ function AppearanceRadio({ value, label, icon, selected, onChange }) {
 }
 
 export default function CustomerSettings() {
+  const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const [settings, setSettings] = useState(() => DEFAULT_SETTINGS_BACKUP());
+  const { user, logout } = useAuth();
+  const [settings, setSettings] = useState(() => {
+    const base = DEFAULT_SETTINGS_BACKUP();
+    if (user) {
+      base.profile = {
+        fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim() || base.profile.fullName,
+        email: user.email || base.profile.email,
+        phone: user.phoneNumber || base.profile.phone,
+      };
+      base.security.passwordLastChanged = user.dateJoined ? new Date(user.dateJoined).toISOString().slice(0, 10) : base.security.passwordLastChanged;
+    }
+    return base;
+  });
   const [saved, setSaved] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [profileEditing, setProfileEditing] = useState(false);
   const [profileBackup, setProfileBackup] = useState(null);
   const [manageOpen, setManageOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ current: "", newPassword: "", confirm: "" });
+  const [passwordErrors, setPasswordErrors] = useState({});
+  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
+  const [passwordOpen, setPasswordOpen] = useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const [generalError, setGeneralError] = useState("");
+
+  const displayName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "User";
+  const displayEmail = user?.email || settings.profile.email;
+  const avatar = user?.profilePicture || "https://lh3.googleusercontent.com/aida-public/AB6AXuC2lOEEk3gBtpUgO713I803vyC3drTRSbe41AfDbydiQQ09IgxdcW224VMXmkGrFNSxuYaK6xmkmBFPyExXx4wHBV3PYUX5cuVO9TaopaZg2FnDkAWKDnh-lGEP8KjbR3cnjolWugFQA8e6Qi-6TQPnqpLmFXl9rxpX5DvmBVKB5RiwwY8DM_-cvVjpCGJpjHOS_4ZMVgyu0lv9FYXDygE4N7WEkQuQ11JFNmzSGTCnsA0RAyB0zpUEmA";
+  const isVerified = user?.isVerified ?? settings.profile.email === settings.profile.email;
 
   const startEditingProfile = () => {
     setProfileBackup(settings.profile);
@@ -176,6 +201,44 @@ export default function CustomerSettings() {
     setDirty(true);
     setSaved(false);
     setSettings((prev) => ({ ...prev, profile: { ...prev.profile, [field]: value } }));
+  };
+
+  const handleChangePassword = async (event) => {
+    event.preventDefault();
+    const next = {};
+    if (!passwordForm.current) next.current = "Current password is required";
+    if (!passwordForm.newPassword) next.newPassword = "New password is required";
+    else if (passwordForm.newPassword.length < 6) next.newPassword = "Password must be at least 6 characters";
+    if (!passwordForm.confirm) next.confirm = "Please confirm your new password";
+    else if (passwordForm.newPassword !== passwordForm.confirm) next.confirm = "Passwords do not match";
+    setPasswordErrors(next);
+    if (Object.keys(next).length > 0) return;
+
+    setPasswordSubmitting(true);
+    setGeneralError("");
+    try {
+      await apiChangePassword({
+        currentPassword: passwordForm.current,
+        newPassword: passwordForm.newPassword,
+        newPasswordConfirm: passwordForm.confirm,
+      });
+      setPasswordOpen(false);
+      setPasswordForm({ current: "", newPassword: "", confirm: "" });
+      setPasswordErrors({});
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1500);
+    } catch (error) {
+      const message = error.data?.detail || error.data?.current_password || error.message || "Unable to change password.";
+      setGeneralError(Array.isArray(message) ? message[0] : message);
+    } finally {
+      setPasswordSubmitting(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    setLogoutConfirmOpen(false);
+    await logout();
+    navigate("/", { replace: true });
   };
 
   const updateNotifPref = (field, value) => {
@@ -291,16 +354,16 @@ export default function CustomerSettings() {
           <div className="flex items-center gap-6 mb-6">
             <div className="h-20 w-20 shrink-0 rounded-full overflow-hidden border border-outline-variant/30">
               <img
-                src={CUSTOMER_ACCOUNT.avatar}
-                alt={CUSTOMER_ACCOUNT.fullName}
+                src={avatar}
+                alt={displayName}
                 className="h-full w-full object-cover"
               />
             </div>
             <div>
-              <p className="font-label-sm text-label-sm text-text-primary">{CUSTOMER_ACCOUNT.fullName}</p>
-              <p className="text-sm text-text-muted">{CUSTOMER_ACCOUNT.tier}</p>
+              <p className="font-label-sm text-label-sm text-text-primary">{displayName}</p>
+              <p className="text-sm text-text-muted">{settings.profile.email === settings.profile.email ? "Customer" : settings.profile.tier}</p>
               <div className="mt-2 flex items-center gap-2">
-                {CUSTOMER_ACCOUNT.verified ? (
+                {isVerified ? (
                   <span className="inline-flex items-center gap-1 rounded-full border border-lime/30 bg-lime/10 px-2.5 py-1 text-xs font-semibold text-accent">
                     <span
                       className="material-symbols text-xs"
@@ -359,7 +422,7 @@ export default function CustomerSettings() {
               <input
                 id="settings-status"
                 type="text"
-                value={CUSTOMER_ACCOUNT.status}
+                value={user?.isActive ? "Active" : "Inactive"}
                 readOnly
                 className={`${inputClass()} cursor-default opacity-60`}
               />
@@ -554,11 +617,9 @@ export default function CustomerSettings() {
                   })}
                 </p>
               </div>
-              <Link to="/forgot-password">
-                <Button type="button" variant="outline" size="sm">
-                  Change Password
-                </Button>
-              </Link>
+              <Button type="button" variant="outline" size="sm" onClick={() => setPasswordOpen(true)}>
+                Change Password
+              </Button>
             </div>
 
             <div className="flex items-center justify-between rounded-lg border border-outline-variant/20 bg-surface-container p-4">
@@ -705,7 +766,22 @@ export default function CustomerSettings() {
         <Button type="button" variant="outline" onClick={handleCancel} disabled={!dirty}>
           Cancel / Reset
         </Button>
+        <Button type="button" variant="outline" onClick={() => setLogoutConfirmOpen(true)} className="sm:ml-auto">
+          <span
+            className="material-symbols text-sm"
+            style={{ fontVariationSettings: "'FILL' 0" }}
+          >
+            logout
+          </span>
+          Log Out
+        </Button>
       </div>
+
+      {generalError ? (
+        <div className="mt-4 rounded-lg border border-red-400/50 bg-red-500/10 p-3">
+          <p className="font-label-sm text-label-sm text-red-400">{generalError}</p>
+        </div>
+      ) : null}
 
       <ConfirmModal
         open={confirmOpen === "session"}
@@ -715,6 +791,87 @@ export default function CustomerSettings() {
         onConfirm={handlePasswordReset}
         onCancel={() => setConfirmOpen(null)}
       />
+
+      <ConfirmModal
+        open={logoutConfirmOpen}
+        title="Log Out?"
+        message="You will be signed out of your account and redirected to the home page."
+        confirmLabel="Log Out"
+        onConfirm={handleLogout}
+        onCancel={() => setLogoutConfirmOpen(false)}
+      />
+
+      {passwordOpen && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Change Password"
+        >
+          <div className="absolute inset-0 bg-obsidian/70 backdrop-blur-sm" onClick={() => setPasswordOpen(false)} />
+          <div className="relative w-full max-w-md rounded-xl border border-outline-variant/20 bg-surface-container p-6 shadow-2xl">
+            <h3 className="font-h4 text-h4 text-text-primary mb-2">Change Password</h3>
+            <p className="font-body-md text-body-md text-text-muted mb-6">
+              Enter your current password and choose a new one.
+            </p>
+            <form onSubmit={handleChangePassword} className="space-y-4">
+              <div className="space-y-2">
+                <label className="block font-label-sm text-label-sm text-text-primary" htmlFor="current-password">
+                  Current Password
+                </label>
+                <input
+                  id="current-password"
+                  type="password"
+                  value={passwordForm.current}
+                  onChange={(e) => setPasswordForm((p) => ({ ...p, current: e.target.value }))}
+                  className={inputClass()}
+                />
+                {passwordErrors.current && (
+                  <p className="mt-1 text-sm text-red-400">{passwordErrors.current}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="block font-label-sm text-label-sm text-text-primary" htmlFor="new-password">
+                  New Password
+                </label>
+                <input
+                  id="new-password"
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) => setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))}
+                  className={inputClass()}
+                />
+                {passwordErrors.newPassword && (
+                  <p className="mt-1 text-sm text-red-400">{passwordErrors.newPassword}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="block font-label-sm text-label-sm text-text-primary" htmlFor="confirm-new-password">
+                  Confirm New Password
+                </label>
+                <input
+                  id="confirm-new-password"
+                  type="password"
+                  value={passwordForm.confirm}
+                  onChange={(e) => setPasswordForm((p) => ({ ...p, confirm: e.target.value }))}
+                  className={inputClass()}
+                />
+                {passwordErrors.confirm && (
+                  <p className="mt-1 text-sm text-red-400">{passwordErrors.confirm}</p>
+                )}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 justify-end">
+                <Button type="button" variant="outline" onClick={() => setPasswordOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={passwordSubmitting}>
+                  {passwordSubmitting ? "Updating..." : "Update Password"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

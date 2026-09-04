@@ -1,10 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
+  const [generalError, setGeneralError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const validate = () => {
@@ -18,14 +22,31 @@ export default function Login() {
       next.password = "Password is required";
     }
     setErrors(next);
+    setGeneralError("");
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
-    setTimeout(() => setSubmitting(false), 1200);
+    setGeneralError("");
+    try {
+      await login({ email: form.email, password: form.password });
+      navigate("/welcome", { replace: true });
+    } catch (error) {
+      if (error.status === 401) {
+        setGeneralError("Invalid credentials. Please try again.");
+      } else if (error.status === 403) {
+        setGeneralError("Account is inactive. Contact support.");
+      } else if (error.message) {
+        setGeneralError(error.message);
+      } else {
+        setGeneralError("Unable to sign in. Please try again.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const update = (field) => (event) => {
@@ -35,6 +56,7 @@ export default function Login() {
       delete next[field];
       return next;
     });
+    setGeneralError("");
   };
 
   return (
@@ -73,6 +95,11 @@ export default function Login() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            {generalError ? (
+              <div className="rounded-lg border border-red-400/50 bg-red-500/10 p-3">
+                <p className="font-label-sm text-label-sm text-red-400">{generalError}</p>
+              </div>
+            ) : null}
             <div className="space-y-2">
               <label
                 className="font-label-sm text-label-sm text-text-muted ml-1"

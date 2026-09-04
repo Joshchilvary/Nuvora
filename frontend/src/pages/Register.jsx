@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
+import { registerUser } from "../services/api/auth.js";
 
 function getPasswordStrength(password) {
   if (!password) return { level: 0, label: "", width: "0%" };
@@ -15,7 +17,16 @@ function getPasswordStrength(password) {
   return { level: 3, label: "Strong", width: "100%" };
 }
 
+function splitFullName(fullName) {
+  const parts = fullName.trim().split(/\s+/);
+  const firstName = parts[0] || "";
+  const lastName = parts.slice(1).join(" ") || "";
+  return { firstName, lastName };
+}
+
 export default function Register() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [terms, setTerms] = useState(false);
@@ -23,10 +34,12 @@ export default function Register() {
   const [form, setForm] = useState({
     fullName: "",
     email: "",
+    phoneNumber: "",
     password: "",
     confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
+  const [generalError, setGeneralError] = useState("");
 
   const strength = useMemo(() => getPasswordStrength(form.password), [form.password]);
 
@@ -44,14 +57,44 @@ export default function Register() {
       next.confirmPassword = "Passwords do not match";
     if (!terms) next.terms = "You must agree to the terms";
     setErrors(next);
+    setGeneralError("");
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
-    setTimeout(() => setSubmitting(false), 1200);
+    setGeneralError("");
+    try {
+      const { firstName, lastName } = splitFullName(form.fullName);
+      await registerUser({
+        firstName,
+        lastName,
+        email: form.email,
+        phoneNumber: form.phoneNumber,
+        password: form.password,
+      });
+      navigate("/verify-phone", { replace: true });
+    } catch (error) {
+      const data = error.data;
+      if (data) {
+        const next = {};
+        if (data.email) next.email = Array.isArray(data.email) ? data.email[0] : data.email;
+        if (data.password) next.password = Array.isArray(data.password) ? data.password[0] : data.password;
+        if (data.password_confirm) next.confirmPassword = Array.isArray(data.password_confirm) ? data.password_confirm[0] : data.password_confirm;
+        if (data.phone_number) next.phoneNumber = Array.isArray(data.phone_number) ? data.phone_number[0] : data.phone_number;
+        if (data.non_field_errors) next.general = Array.isArray(data.non_field_errors) ? data.non_field_errors[0] : data.non_field_errors;
+        setErrors(next);
+        setGeneralError(next.general || "Unable to create account. Please try again.");
+      } else if (error.message) {
+        setGeneralError(error.message);
+      } else {
+        setGeneralError("Unable to create account. Please try again.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const update = (field) => (event) => {
@@ -61,6 +104,7 @@ export default function Register() {
       delete next[field];
       return next;
     });
+    setGeneralError("");
   };
 
   const strengthColor =
@@ -102,6 +146,11 @@ export default function Register() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {generalError ? (
+              <div className="rounded-lg border border-red-400/50 bg-red-500/10 p-3">
+                <p className="font-label-sm text-label-sm text-red-400">{generalError}</p>
+              </div>
+            ) : null}
             <div className="space-y-2">
               <label
                 className="font-label-sm text-label-sm text-text-muted ml-1"
@@ -143,6 +192,28 @@ export default function Register() {
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label
+                className="font-label-sm text-label-sm text-text-muted ml-1"
+                htmlFor="register-phone"
+              >
+                Phone Number
+              </label>
+              <input
+                id="register-phone"
+                type="tel"
+                value={form.phoneNumber}
+                onChange={update("phoneNumber")}
+                placeholder="+1 (555) 000-0000"
+                className={`w-full rounded-lg border bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime ${
+                  errors.phoneNumber ? "border-red-400" : "border-outline-variant/30"
+                }`}
+              />
+              {errors.phoneNumber && (
+                <p className="mt-1 text-sm text-red-400">{errors.phoneNumber}</p>
               )}
             </div>
 
