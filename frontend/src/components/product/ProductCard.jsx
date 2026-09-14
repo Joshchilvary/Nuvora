@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../ui/Button.jsx";
 import Badge from "../ui/Badge.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { useWishlist } from "../../context/WishlistContext.jsx";
 
 export default function ProductCard({
   id,
@@ -12,10 +14,14 @@ export default function ProductCard({
   badge,
   onAddToCart,
 }) {
-  const [favorite, setFavorite] = useState(false);
   const [added, setAdded] = useState(false);
   const [popped, setPopped] = useState(false);
   const [flyKey, setFlyKey] = useState(0);
+  const { isAuthenticated } = useAuth();
+  const { isWishlisted, toggle } = useWishlist();
+  const navigate = useNavigate();
+
+  const wishlisted = id ? isWishlisted(id) : false;
 
   const handleAddToCart = () => {
     onAddToCart?.();
@@ -24,6 +30,17 @@ export default function ProductCard({
     setTimeout(() => setPopped(false), 500);
     setFlyKey((k) => k + 1);
     setTimeout(() => setAdded(false), 1500);
+  };
+
+  const handleToggleWishlist = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!isAuthenticated) {
+      navigate("/login", { state: { from: { pathname: window.location.pathname } } });
+      return;
+    }
+    if (!id) return;
+    await toggle(id);
   };
 
   return (
@@ -50,16 +67,16 @@ export default function ProductCard({
           </div>
         )}
         <button
-          onClick={() => setFavorite((prev) => !prev)}
+          onClick={handleToggleWishlist}
           className={`absolute right-4 top-4 z-10 flex items-center justify-center rounded-full bg-deep-surface/70 p-2 backdrop-blur-sm transition-colors ${
-            favorite ? "text-accent" : "text-text-muted hover:text-accent"
+            wishlisted ? "text-accent" : "text-text-muted hover:text-accent"
           }`}
-          aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
-          aria-pressed={favorite}
+          aria-label={wishlisted ? "Remove from favorites" : "Add to favorites"}
+          aria-pressed={wishlisted}
         >
           <span
             className="material-symbols text-[20px]"
-            style={{ fontVariationSettings: favorite ? "'FILL' 1" : "'FILL' 0" }}
+            style={{ fontVariationSettings: wishlisted ? "'FILL' 1" : "'FILL' 0" }}
           >
             favorite
           </span>

@@ -5,6 +5,8 @@ import Button from "../components/ui/Button.jsx";
 import ProductCard from "../components/product/ProductCard.jsx";
 import { getProductById, getRelatedProducts } from "../services/api/marketplace.js";
 import { useCart } from "../context/CartContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
+import { useWishlist } from "../context/WishlistContext.jsx";
 
 function QuantityStepper({ value, onChange }) {
   return (
@@ -38,12 +40,24 @@ export default function ProductDetails() {
   const [related, setRelated] = useState([]);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [favorite, setFavorite] = useState(false);
   const [added, setAdded] = useState(false);
   const [popped, setPopped] = useState(false);
   const [flyKey, setFlyKey] = useState(0);
   const [error, setError] = useState(null);
   const { addItem } = useCart();
+  const { isAuthenticated } = useAuth();
+  const { isWishlisted, toggle: toggleWishlist } = useWishlist();
+
+  const favorite = product ? isWishlisted(product.id) : false;
+
+  const handleToggleFavorite = async () => {
+    if (!product) return;
+    if (!isAuthenticated) {
+      navigate("/login", { state: { from: location } });
+      return;
+    }
+    await toggleWishlist(product.id);
+  };
 
   const handleBack = () => {
     if (location.key === "default") {
@@ -58,7 +72,6 @@ export default function ProductDetails() {
     setProduct(undefined);
     setSelectedImage(0);
     setQuantity(1);
-    setFavorite(false);
     setError(null);
     setRelated([]);
 
@@ -246,7 +259,7 @@ export default function ProductDetails() {
                 )}
               </div>
               <button
-                onClick={() => setFavorite((prev) => !prev)}
+                onClick={handleToggleFavorite}
                 className={`flex h-14 w-14 items-center justify-center rounded-xl border transition-colors ${
                   favorite
                     ? "border-lime/40 text-accent"

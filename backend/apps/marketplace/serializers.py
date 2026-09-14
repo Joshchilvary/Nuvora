@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from apps.users.models import SellerProfile
-from .models import Category, Product, ProductImage
+from .models import Category, Product, ProductImage, Wishlist, WishlistItem
 
 
 def absolute_image_url(image_field, request=None):
@@ -128,3 +128,35 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
+
+class WishlistItemCreateSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField(min_value=1)
+
+
+class WishlistItemSerializer(serializers.ModelSerializer):
+    product = ProductListSerializer(read_only=True)
+
+    class Meta:
+        model = WishlistItem
+        fields = ["id", "product", "created_at"]
+
+
+class WishlistSerializer(serializers.ModelSerializer):
+    items = serializers.SerializerMethodField()
+    item_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Wishlist
+        fields = ["id", "items", "item_count", "created_at", "updated_at"]
+
+    def get_items(self, obj):
+        qs = (
+            obj.items.select_related("product__category", "product__seller__user")
+            .prefetch_related("product__images")
+            .order_by("-created_at")
+        )
+        return WishlistItemSerializer(qs, many=True, context=self.context).data
+
+    def get_item_count(self, obj):
+        return obj.items.count()

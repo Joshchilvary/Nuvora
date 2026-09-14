@@ -1,11 +1,10 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import Button from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
 import ProductCard from "../components/product/ProductCard.jsx";
-import { PRODUCTS } from "../data/products.js";
-import { CUSTOMER_WISHLIST } from "../data/customerWishlist.js";
 import { useCart } from "../context/CartContext.jsx";
+import { useWishlist } from "../context/WishlistContext.jsx";
 
 const SORT_OPTIONS = [
   { id: "recent", label: "Recently Added" },
@@ -15,67 +14,95 @@ const SORT_OPTIONS = [
 ];
 
 function formatDate(dateStr) {
-  return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  if (!dateStr) return null;
+  try {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch {
+    return null;
+  }
+}
+
+function getImageUrl(item) {
+  const product = item?.product;
+  return (
+    product?.primary_image?.image ||
+    product?.images?.[0]?.image ||
+    null
+  );
 }
 
 export default function CustomerWishlist() {
   const { addItem } = useCart();
-  const [wishlistIds, setWishlistIds] = useState(CUSTOMER_WISHLIST);
+  const { items, loading, error, remove, refresh } = useWishlist();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("recent");
 
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
   const wishlistProducts = useMemo(() => {
-    return wishlistIds
+    return items
       .map((item) => {
-        const product = PRODUCTS.find((p) => p.id === item.productId);
+        const product = item?.product;
         if (!product) return null;
         return {
           ...product,
-          savedAt: item.savedAt,
-          seller: "NUVORA",
+          savedAt: item.created_at,
+          image: getImageUrl(item),
         };
       })
       .filter(Boolean);
-  }, [wishlistIds]);
+  }, [items]);
 
   const filteredProducts = useMemo(() => {
     let result = [...wishlistProducts];
 
     const query = searchQuery.toLowerCase().trim();
     if (query) {
-      result = result.filter(
-        (product) =>
-          product.name.toLowerCase().includes(query) ||
-          product.category.toLowerCase().includes(query)
-      );
+      result = result.filter((product) => {
+        const name = product.name?.toLowerCase() || "";
+        const cat =
+          product.category?.name?.toLowerCase() ||
+          product.category?.slug?.toLowerCase() ||
+          "";
+        return name.includes(query) || cat.includes(query);
+      });
     }
 
     switch (sortOption) {
       case "price-asc":
-        result.sort((a, b) => a.price - b.price);
+        result.sort((a, b) => Number(a.price) - Number(b.price));
         break;
       case "price-desc":
-        result.sort((a, b) => b.price - a.price);
+        result.sort((a, b) => Number(b.price) - Number(a.price));
         break;
       case "name":
-        result.sort((a, b) => a.name.localeCompare(b.name));
+        result.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
         break;
       case "recent":
       default:
-        result.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
+        result.sort((a, b) => {
+          const aDate = a.savedAt ? new Date(a.savedAt).getTime() : 0;
+          const bDate = b.savedAt ? new Date(b.savedAt).getTime() : 0;
+          return bDate - aDate;
+        });
         break;
     }
 
     return result;
   }, [wishlistProducts, searchQuery, sortOption]);
 
-  const handleRemoveFromWishlist = useCallback((productId) => {
-    setWishlistIds((prev) => prev.filter((item) => item.productId !== productId));
-  }, []);
+  const handleRemoveFromWishlist = useCallback(
+    async (productId) => {
+      await remove(productId);
+    },
+    [remove]
+  );
 
   const handleAddToCart = useCallback(
     (product) => {
@@ -83,9 +110,9 @@ export default function CustomerWishlist() {
         {
           id: product.id,
           name: product.name,
-          price: product.price,
+          price: Number(product.price),
           image: product.image,
-          category: product.category,
+          category: product.category?.slug || product.category || "",
         },
         1
       );
@@ -102,9 +129,60 @@ export default function CustomerWishlist() {
     setSortOption("recent");
   }, []);
 
+  if (loading && wishlistProducts.length === 0) {
+    return (
+      <div className="flex flex-col min-h-full">
+        <div className="mb-6">
+          <h1 className="font-display text-h2 text-text-primary">Saved Items</h1>
+          <p className="font-body-md text-body-md text-text-muted mt-1">
+            Loading your saved products…
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-2xl border border-outline-variant/20 bg-surface p-6"
+            >
+              <div className="mb-4 h-64 w-full animate-pulse rounded-xl bg-surface-container" />
+              <div className="mb-2 h-6 w-3/4 animate-pulse rounded bg-surface-container" />
+              <div className="mb-4 h-4 w-full animate-pulse rounded bg-surface-container" />
+              <div className="h-11 w-full animate-pulse rounded-lg bg-surface-container" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error && wishlistProducts.length === 0) {
+    return (
+      <div className="flex flex-col min-h-full">
+        <div className="mb-6">
+          <h1 className="font-display text-h2 text-text-primary">Saved Items</h1>
+        </div>
+        <Card className="p-12">
+          <div className="flex flex-col items-center justify-center text-center">
+            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-surface-container">
+              <span className="material-symbols text-4xl text-text-muted">
+                cloud_off
+              </span>
+            </div>
+            <h2 className="font-display text-h3 text-text-primary mb-2">
+              Unable to load your wishlist
+            </h2>
+            <p className="font-body-md text-body-md text-text-muted mb-8 max-w-md">
+              Please try again in a moment.
+            </p>
+            <Button onClick={refresh}>Try Again</Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-full">
-      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="font-display text-h2 text-text-primary">Saved Items</h1>
@@ -122,14 +200,12 @@ export default function CustomerWishlist() {
         </Link>
       </div>
 
-      {/* Wishlist Count */}
       <p className="text-sm text-text-muted mb-6">
         {wishlistProducts.length === 1
           ? "1 saved item"
           : `${wishlistProducts.length} saved items`}
       </p>
 
-      {/* Search and Sort Controls */}
       {wishlistProducts.length > 0 && (
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="relative flex-1">
@@ -180,7 +256,6 @@ export default function CustomerWishlist() {
         </div>
       )}
 
-      {/* Product Grid or Empty State */}
       {wishlistProducts.length === 0 ? (
         <Card className="p-12">
           <div className="flex flex-col items-center justify-center text-center">
@@ -232,34 +307,45 @@ export default function CustomerWishlist() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredProducts.map((product) => (
-            <div key={product.id} className="relative group">
-              <ProductCard
-                id={product.id}
-                image={product.image}
-                title={product.name}
-                price={`$${product.price}`}
-                description={product.description}
-                badge={product.badge}
-                onAddToCart={() => handleAddToCart(product)}
-              />
-              <button
-                onClick={() => handleRemoveFromWishlist(product.id)}
-                className="absolute right-2 top-2 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-obsidian/80 text-accent backdrop-blur-sm transition-all hover:bg-obsidian hover:scale-110 shadow-lg"
-                aria-label={`Remove ${product.name} from saved items`}
-              >
-                <span
-                  className="material-symbols text-[20px]"
-                  style={{ fontVariationSettings: "'FILL' 1" }}
+          {filteredProducts.map((product) => {
+            const inStock =
+              product.stock_quantity == null || product.stock_quantity > 0;
+            return (
+              <div key={product.id} className="relative group">
+                <ProductCard
+                  id={product.id}
+                  image={product.image}
+                  title={product.name}
+                  price={`$${product.price}`}
+                  description={product.description}
+                  badge={product.badge}
+                  onAddToCart={() => handleAddToCart(product)}
+                />
+                {!inStock ? (
+                  <div className="absolute right-2 top-2 z-20 rounded-full bg-obsidian/80 px-2 py-1 text-[10px] font-medium text-accent backdrop-blur-sm">
+                    Out of stock
+                  </div>
+                ) : null}
+                <button
+                  onClick={() => handleRemoveFromWishlist(product.id)}
+                  className="absolute left-2 top-2 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-obsidian/80 text-accent backdrop-blur-sm transition-all hover:bg-obsidian hover:scale-110 shadow-lg"
+                  aria-label={`Remove ${product.name} from saved items`}
                 >
-                  close
-                </span>
-              </button>
-              <div className="absolute left-2 top-2 z-20 rounded-full bg-surface-container/90 px-2 py-1 text-[10px] font-medium text-text-muted backdrop-blur-sm">
-                Saved {formatDate(product.savedAt)}
+                  <span
+                    className="material-symbols text-[20px]"
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    close
+                  </span>
+                </button>
+                {product.savedAt ? (
+                  <div className="absolute left-2 bottom-2 z-20 rounded-full bg-surface-container/90 px-2 py-1 text-[10px] font-medium text-text-muted backdrop-blur-sm">
+                    Saved {formatDate(product.savedAt)}
+                  </div>
+                ) : null}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
