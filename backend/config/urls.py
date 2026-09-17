@@ -7,4 +7,5 @@ urlpatterns = [
     path("api/health/", ApiHealthView.as_view(), name="api-health"),
     path("api/auth/", include("apps.authentication.urls")),
     path("api/", include("apps.marketplace.urls")),
+    path("api/", include("apps.orders.urls")),
 ]
