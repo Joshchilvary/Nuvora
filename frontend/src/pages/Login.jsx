@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
@@ -33,7 +34,8 @@ export default function Login() {
     setGeneralError("");
     try {
       await login({ email: form.email, password: form.password });
-      navigate("/welcome", { replace: true });
+      const redirectTo = location.state?.from || "/welcome";
+      navigate(redirectTo, { replace: true });
     } catch (error) {
       if (error.status === 401) {
         setGeneralError("Invalid credentials. Please try again.");

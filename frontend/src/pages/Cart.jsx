@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import Button from "../components/ui/Button.jsx";
 
 function CartItem({ item, onIncrement, onDecrement, onRemove }) {
@@ -73,7 +74,7 @@ function CartItem({ item, onIncrement, onDecrement, onRemove }) {
   );
 }
 
-function OrderSummary({ subtotal, total }) {
+function OrderSummary({ subtotal, total, checkoutLabel, checkoutDisabled }) {
   return (
     <div className="rounded-2xl border border-outline-variant/20 bg-surface p-6 shadow-sm lg:p-8 lg:sticky lg:top-32">
       <h2 className="font-h3 text-h3 text-text-primary border-b border-outline-variant/20 pb-4">
@@ -101,12 +102,19 @@ function OrderSummary({ subtotal, total }) {
       </div>
 
       <div className="mt-6 flex flex-col gap-4">
-        <Link to="/checkout">
-          <Button className="w-full py-4">
-            Proceed to Checkout
+        {checkoutDisabled ? (
+          <Button className="w-full py-4" disabled>
+            {checkoutLabel}
             <span className="material-symbols text-[20px]">arrow_forward</span>
           </Button>
-        </Link>
+        ) : (
+          <Link to="/checkout">
+            <Button className="w-full py-4">
+              {checkoutLabel}
+              <span className="material-symbols text-[20px]">arrow_forward</span>
+            </Button>
+          </Link>
+        )}
         <div className="flex items-center justify-center gap-2 text-text-muted text-sm">
           <span className="material-symbols text-[16px]">lock</span>
           Secure encrypted checkout
@@ -117,9 +125,17 @@ function OrderSummary({ subtotal, total }) {
 }
 
 export default function Cart() {
-  const { items, removeItem, increment, decrement, totalItems, subtotal } =
+  const { items, removeItem, increment, decrement, totalItems, subtotal, loading } =
     useCart();
+  const { isAuthenticated } = useAuth();
   const total = subtotal;
+
+  const checkoutDisabled = loading;
+  const checkoutLabel = loading
+    ? "Syncing cart..."
+    : !isAuthenticated
+      ? "Login to Checkout"
+      : "Proceed to Checkout";
 
   if (items.length === 0) {
     return (
@@ -179,7 +195,7 @@ export default function Cart() {
         </div>
 
         <div className="w-full lg:w-1/3">
-          <OrderSummary subtotal={subtotal} total={total} />
+          <OrderSummary subtotal={subtotal} total={total} checkoutLabel={checkoutLabel} checkoutDisabled={checkoutDisabled} />
         </div>
       </div>
     </div>

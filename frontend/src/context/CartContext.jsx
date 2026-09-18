@@ -138,12 +138,11 @@ export function CartProvider({ children }) {
     setError(null);
   }, []);
 
-  // --- refresh ---------------------------------------------------------------
+  // --- refresh (manual use only — not auto-triggered by auth transitions) -----
 
   const refresh = useCallback(async () => {
     if (!isAuthenticated) {
-      const guestItems = readGuestCart();
-      applyGuestCart(guestItems);
+      applyGuestCart(readGuestCart());
       return;
     }
     setLoading(true);
@@ -158,16 +157,24 @@ export function CartProvider({ children }) {
     }
   }, [isAuthenticated, applyCart, applyGuestCart]);
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
-
   // --- Guest cart merge on login ---------------------------------------------
 
   const mergeGuestCartRef = useRef(null);
   mergeGuestCartRef.current = async () => {
     const guestItems = readGuestCart();
-    if (guestItems.length === 0) return;
+
+    if (guestItems.length === 0) {
+      setLoading(true);
+      try {
+        const data = await getCart();
+        applyCart(data);
+      } catch (err) {
+        setError(err?.message || "Failed to load cart");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -184,7 +191,6 @@ export function CartProvider({ children }) {
       }
     }
 
-    // Refresh backend cart (authoritative state overwrites guest display data)
     try {
       const data = await getCart();
       applyCart(data);
@@ -192,7 +198,6 @@ export function CartProvider({ children }) {
       // Backend refresh failed — still clean up successful guest items
     }
 
-    // Clean up guest localStorage
     if (failed.length > 0) {
       writeGuestCart(failed);
       const failedNames = failed.map((i) => i.name).filter(Boolean);
@@ -204,21 +209,43 @@ export function CartProvider({ children }) {
     } else {
       removeGuestCart();
     }
+
+    setLoading(false);
   };
 
+  // --- Auth transition: single controlled workflow ---------------------------
+
+  const didInitRef = useRef(false);
+
   useEffect(() => {
-    if (!isAuthenticated) return;
-    if (!wasAuthenticatedRef.current) {
-      // false → true: genuine login transition
-      if (!mergeRef.current) {
-        mergeRef.current = true;
-        mergeGuestCartRef.current().finally(() => {
-          mergeRef.current = false;
-        });
+    const wasAuthenticated = wasAuthenticatedRef.current;
+
+    if (!didInitRef.current) {
+      didInitRef.current = true;
+      if (isAuthenticated) {
+        setLoading(true);
+        getCart()
+          .then((data) => applyCart(data))
+          .catch((err) => setError(err?.message || "Failed to load cart"))
+          .finally(() => setLoading(false));
+      } else {
+        applyGuestCart(readGuestCart());
       }
+    } else if (!wasAuthenticated && isAuthenticated) {
+      mergeRef.current = true;
+      mergeGuestCartRef.current().finally(() => {
+        mergeRef.current = false;
+      });
+    } else if (wasAuthenticated && !isAuthenticated) {
+      removeGuestCart();
+      setItems([]);
+      setSubtotal(0);
+      setTotalItems(0);
+      setError(null);
     }
+
     wasAuthenticatedRef.current = isAuthenticated;
-  }, [isAuthenticated]);
+  }, [isAuthenticated, applyCart, applyGuestCart]);
 
   // --- addItem ---------------------------------------------------------------
 

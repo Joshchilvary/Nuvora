@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
 import Button from "../components/ui/Button.jsx";
 import { buildOrder, saveLastOrder } from "../lib/order.js";
@@ -98,7 +98,7 @@ function CheckoutSummary({ subtotal, shipping, total, items }) {
 }
 
 export default function Checkout() {
-  const { items, subtotal, clear } = useCart();
+  const { items, subtotal, clear, loading } = useCart();
   const navigate = useNavigate();
   const [deliveryId, setDeliveryId] = useState("express");
   const [errors, setErrors] = useState({});
@@ -121,23 +121,17 @@ export default function Checkout() {
   const shipping = DELIVERY_OPTIONS.find((o) => o.id === deliveryId)?.price ?? 0;
   const total = subtotal + shipping;
 
-  if (items.length === 0) {
+  if (loading) {
     return (
       <div className="flex flex-col items-center justify-center gap-6 py-20 text-center">
-        <span className="material-symbols text-6xl text-text-muted">
-          shopping_cart
-        </span>
-        <h1 className="font-display text-h2 text-text-primary">
-          Your cart is empty
-        </h1>
-        <p className="text-body-lg text-text-muted max-w-md">
-          Add items to your cart before checking out.
-        </p>
-        <Link to="/marketplace">
-          <Button>Continue Shopping</Button>
-        </Link>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-lime border-t-transparent" />
+        <p className="text-body-lg text-text-muted">Preparing your checkout...</p>
       </div>
     );
+  }
+
+  if (items.length === 0) {
+    return <Navigate to="/cart" replace />;
   }
 
   const validate = () => {
@@ -502,7 +496,7 @@ export default function Checkout() {
                 <span className="material-symbols text-[18px]">arrow_back</span>
                 Return to Cart
               </Link>
-              <Button type="submit" className="w-full sm:w-auto px-8 py-4">
+              <Button type="submit" className="w-full sm:w-auto px-8 py-4" disabled={loading}>
                 <span className="material-symbols text-[18px]">lock</span>
                 Place Order
               </Button>
