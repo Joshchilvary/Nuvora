@@ -156,7 +156,12 @@ export default function Marketplace() {
           <ProductGrid
             products={products}
             loading={loading}
-            onAddToCart={(product) => addItem(product.id, 1)}
+            onAddToCart={(product) => addItem(product.id, 1, {
+              name: product.name,
+              price: Number(product.price),
+              image: product.primary_image?.image || product.images?.[0]?.image || "",
+              category: product.category?.slug || "",
+            })}
           />
         )}
       </div>

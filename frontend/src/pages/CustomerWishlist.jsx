@@ -106,7 +106,12 @@ export default function CustomerWishlist() {
 
   const handleAddToCart = useCallback(
     async (product) => {
-      await addItem(product.id, 1);
+      await addItem(product.id, 1, {
+        name: product.name,
+        price: Number(product.price),
+        image: product.image || "",
+        category: product.category?.slug || product.category || "",
+      });
     },
     [addItem]
   );

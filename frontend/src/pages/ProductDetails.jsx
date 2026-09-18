@@ -220,7 +220,12 @@ export default function ProductDetails() {
                 <Button
                   className={`w-full rounded-xl px-8 py-4 ${popped ? "animate-add-pop" : ""}`}
                   onClick={async () => {
-                    const result = await addItem(product.id, quantity);
+                    const result = await addItem(product.id, quantity, {
+                      name: product.name,
+                      price: Number(product.price),
+                      image: images[0] || "",
+                      category: product.category?.slug || "",
+                    });
                     if (!result?.ok) return;
                     setAdded(true);
                     setPopped(true);
@@ -350,7 +355,12 @@ export default function ProductDetails() {
                   price={`$${item.price}`}
                   description={item.description}
                   badge={item.badge}
-                  onAddToCart={() => addItem(item.id, 1)}
+                  onAddToCart={() => addItem(item.id, 1, {
+                    name: item.name,
+                    price: Number(item.price),
+                    image: item.primary_image?.image || item.images?.[0]?.image || "",
+                    category: item.category?.slug || "",
+                  })}
                 />
               ))}
             </div>

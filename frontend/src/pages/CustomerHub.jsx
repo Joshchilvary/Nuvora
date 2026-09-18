@@ -117,7 +117,12 @@ export default function CustomerHub() {
   const firstName = user?.firstName?.split(" ")[0] || CUSTOMER_PROFILE.name.split(" ")[0];
 
   const handleAddToCart = async (product) => {
-    return addItem(product.id, 1);
+    return addItem(product.id, 1, {
+      name: product.name,
+      price: Number(product.price),
+      image: product.image || "",
+      category: product.category || "",
+    });
   };
 
   return (
