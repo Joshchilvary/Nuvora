@@ -46,13 +46,9 @@ function SavedProductCard({ product, onAddToCart }) {
   const [popped, setPopped] = useState(false);
   const [flyKey, setFlyKey] = useState(0);
 
-  const handleAddToCart = () => {
-    onAddToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-    });
+  const handleAddToCart = async () => {
+    const result = await onAddToCart(product);
+    if (!result?.ok) return;
     setAdded(true);
     setPopped(true);
     setTimeout(() => setPopped(false), 500);
@@ -120,8 +116,8 @@ export default function CustomerHub() {
   const { user } = useAuth();
   const firstName = user?.firstName?.split(" ")[0] || CUSTOMER_PROFILE.name.split(" ")[0];
 
-  const handleAddToCart = (product) => {
-    addItem(product, 1);
+  const handleAddToCart = async (product) => {
+    return addItem(product.id, 1);
   };
 
   return (

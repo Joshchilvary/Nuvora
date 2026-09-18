@@ -219,17 +219,9 @@ export default function ProductDetails() {
               <div className="relative flex-1">
                 <Button
                   className={`w-full rounded-xl px-8 py-4 ${popped ? "animate-add-pop" : ""}`}
-                  onClick={() => {
-                    addItem(
-                      {
-                        id: product.id,
-                        name: product.name,
-                        price: Number(product.price),
-                        image: images[0] || "",
-                        category: product.category?.slug || "",
-                      },
-                      quantity
-                    );
+                  onClick={async () => {
+                    const result = await addItem(product.id, quantity);
+                    if (!result?.ok) return;
                     setAdded(true);
                     setPopped(true);
                     setTimeout(() => setPopped(false), 500);
@@ -358,7 +350,7 @@ export default function ProductDetails() {
                   price={`$${item.price}`}
                   description={item.description}
                   badge={item.badge}
-                  onAddToCart={() => addItem(item, 1)}
+                  onAddToCart={() => addItem(item.id, 1)}
                 />
               ))}
             </div>

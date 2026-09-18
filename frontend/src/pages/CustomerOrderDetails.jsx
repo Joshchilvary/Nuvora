@@ -182,16 +182,8 @@ export default function CustomerOrderDetails() {
 
   const statusConfig = order ? STATUS_CONFIG[order.status] : null;
 
-  const handleBuyAgain = (item) => {
-    addItem(
-      {
-        id: item.productId,
-        name: item.name,
-        price: item.price,
-        image: item.image,
-      },
-      item.quantity
-    );
+  const handleBuyAgain = async (item) => {
+    await addItem(item.productId, item.quantity);
   };
 
   const handleCancelOrder = () => {
