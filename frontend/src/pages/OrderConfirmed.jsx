@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams, Navigate } from "react-router-dom";
+import { Link, useParams, Navigate, useLocation, useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
 import Badge from "../components/ui/Badge.jsx";
 import { getOrder } from "../services/api/order.js";
+import { retryPayment, pollPaymentUntilTerminal } from "../services/api/payment.js";
+import { openPaystackPopup } from "../services/paystack.js";
 
 function formatOrderDate(iso) {
   if (!iso) return "";
@@ -163,9 +165,15 @@ function ShippingCard({ order }) {
 
 export default function OrderConfirmed() {
   const { orderNumber } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [paymentPending, setPaymentPending] = useState(
+    location.state?.paymentPending || false
+  );
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -181,6 +189,7 @@ export default function OrderConfirmed() {
       .then((data) => {
         if (!cancelled) {
           setOrder(data);
+          if (data.is_paid === false) setPaymentPending(true);
           setLoading(false);
         }
       })
@@ -195,6 +204,30 @@ export default function OrderConfirmed() {
       cancelled = true;
     };
   }, [orderNumber]);
+
+  const handleRetryPayment = async () => {
+    setRetrying(true);
+    try {
+      const payment = await retryPayment(orderNumber);
+      await openPaystackPopup({
+        accessCode: payment.access_code,
+        email: order.email,
+      });
+      const paymentStatus = await pollPaymentUntilTerminal(payment.payment_reference);
+      if (paymentStatus?.status === "successful" || paymentStatus?.status === "completed") {
+        setPaymentPending(false);
+        setOrder((prev) => ({ ...prev, is_paid: true }));
+      }
+    } catch (err) {
+      if (err?.message !== "cancelled") {
+        navigate(`/customer/orders/${orderNumber}`, {
+          state: { retryError: err?.message || "Payment failed." },
+        });
+      }
+    } finally {
+      setRetrying(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -234,11 +267,14 @@ export default function OrderConfirmed() {
         {/* Headline */}
         <div className="space-y-4 text-center fade-rise" style={{ animationDelay: "0.15s" }}>
           <h1 className="text-[40px] font-semibold leading-[48px] tracking-tight text-accent md:text-h1 md:leading-[64px]">
-            Your discovery is on its way.
+            {paymentPending
+              ? "Your order is pending payment."
+              : "Your discovery is on its way."}
           </h1>
           <p className="mx-auto max-w-xl font-body-lg text-body-lg text-text-muted">
-            We've received your order and are preparing it for an atmospheric journey to
-            your destination.
+            {paymentPending
+              ? "Your order has been placed. Complete payment to confirm it."
+              : "We've received your order and are preparing it for an atmospheric journey to your destination."}
           </p>
         </div>
 
@@ -277,6 +313,34 @@ export default function OrderConfirmed() {
             A confirmation has been sent to {order.email || "your email"}.
           </p>
         </div>
+
+        {/* Payment pending banner */}
+        {paymentPending && (
+          <div className="mt-8 rounded-2xl border border-yellow-400/30 bg-yellow-400/5 p-6 text-center fade-rise" style={{ animationDelay: "0.45s" }}>
+            <span className="material-symbols mb-2 text-4xl text-yellow-400">pending</span>
+            <p className="text-body-lg font-semibold text-yellow-400">Payment Pending</p>
+            <p className="mt-1 text-body-md text-text-muted">
+              Your order has been reserved. Complete payment within 30 minutes or it may be automatically cancelled.
+            </p>
+            <Button
+              onClick={handleRetryPayment}
+              disabled={retrying}
+              className="mt-4 px-8 py-3"
+            >
+              {retrying ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-obsidian border-t-transparent" />
+                  Opening payment...
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols text-[18px]">payment</span>
+                  Complete Payment Now
+                </>
+              )}
+            </Button>
+          </div>
+        )}
 
         {/* Actions */}
         <div

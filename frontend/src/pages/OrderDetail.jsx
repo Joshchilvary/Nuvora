@@ -4,6 +4,8 @@ import Button from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
 import Badge from "../components/ui/Badge.jsx";
 import { getOrder } from "../services/api/order.js";
+import { retryPayment, pollPaymentUntilTerminal } from "../services/api/payment.js";
+import { openPaystackPopup } from "../services/paystack.js";
 
 const STATUS_CONFIG = {
   pending: { label: "Pending", icon: "schedule", className: "bg-yellow-400/10 text-yellow-400 border-yellow-400/30" },
@@ -46,6 +48,8 @@ export default function OrderDetail() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [retrying, setRetrying] = useState(false);
+  const [retryError, setRetryError] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -65,6 +69,32 @@ export default function OrderDetail() {
       });
     return () => { cancelled = true; };
   }, [orderNumber]);
+
+  const handleRetryPayment = async () => {
+    setRetrying(true);
+    setRetryError(null);
+    try {
+      const payment = await retryPayment(orderNumber);
+      await openPaystackPopup({
+        accessCode: payment.access_code,
+        email: order.email,
+      });
+      const paymentStatus = await pollPaymentUntilTerminal(payment.payment_reference);
+      if (paymentStatus?.status === "successful" || paymentStatus?.status === "completed") {
+        setOrder((prev) => ({ ...prev, is_paid: true }));
+      } else {
+        setRetryError("Payment was not completed. Please try again.");
+      }
+    } catch (err) {
+      if (err?.message !== "cancelled") {
+        setRetryError(err?.message || "Payment failed. Please try again.");
+      }
+    } finally {
+      setRetrying(false);
+    }
+  };
+
+  const showPayButton = order && order.status === "pending" && !order.is_paid;
 
   if (loading) {
     return (
@@ -115,12 +145,53 @@ export default function OrderDetail() {
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="font-display text-h2 text-text-primary">#{order.order_number}</h1>
             <OrderStatusBadge status={order.status} />
+            {order.is_paid === false && order.status === "pending" && (
+              <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold bg-yellow-400/10 text-yellow-400 border-yellow-400/30">
+                <span className="material-symbols text-xs" style={{ fontVariationSettings: "'FILL' 1" }}>pending</span>
+                Payment Pending
+              </span>
+            )}
           </div>
           <p className="text-sm text-text-muted mt-1">
             Placed on {formatDate(order.created_at)}
           </p>
         </div>
       </div>
+
+      {/* Retry payment banner */}
+      {showPayButton && (
+        <div className="mb-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/5 p-6">
+          <div className="flex items-start gap-4">
+            <span className="material-symbols mt-0.5 text-[22px] text-yellow-400">pending</span>
+            <div className="flex-1">
+              <h3 className="font-h4 text-h4 text-yellow-400">Payment Pending</h3>
+              <p className="mt-1 text-body-md text-text-muted">
+                Complete your payment to confirm this order. The order will be cancelled after 30 minutes.
+              </p>
+              {retryError && (
+                <p className="mt-2 text-body-sm text-red-400">{retryError}</p>
+              )}
+            </div>
+            <Button
+              onClick={handleRetryPayment}
+              disabled={retrying}
+              className="px-6 py-3 shrink-0"
+            >
+              {retrying ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-obsidian border-t-transparent" />
+                  Opening payment...
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols text-[18px]">payment</span>
+                  Complete Payment
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Items */}
       <Card className="p-6 mb-6">

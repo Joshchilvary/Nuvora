@@ -99,6 +99,9 @@ class Order(models.Model):
         default=Status.PENDING,
     )
 
+    # --- Payment state -------------------------------------------------------
+    is_paid = models.BooleanField(default=False)
+
     # --- Customer information snapshot ----------------------------------------
     email = models.EmailField(max_length=255)
     full_name = models.CharField(max_length=255)

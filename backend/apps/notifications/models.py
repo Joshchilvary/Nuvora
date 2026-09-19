@@ -5,6 +5,7 @@ from django.utils import timezone
 class Notification(models.Model):
     TYPE_CHOICES = [
         ("order", "Order"),
+        ("payment", "Payment"),
         ("seller", "Seller"),
         ("security", "Security"),
         ("system", "System"),

@@ -3,6 +3,8 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
 import Button from "../components/ui/Button.jsx";
 import { createOrder } from "../services/api/order.js";
+import { initializePayment, pollPaymentUntilTerminal } from "../services/api/payment.js";
+import { openPaystackPopup } from "../services/paystack.js";
 
 const DELIVERY_OPTIONS = [
   {
@@ -166,8 +168,38 @@ export default function Checkout() {
       });
 
       await refresh();
+
+      const payment = await initializePayment(order.order_number);
+      const accessCode = payment.access_code;
+      const paymentReference = payment.payment_reference;
+
+      try {
+        await openPaystackPopup({
+          accessCode,
+          email: form.email.trim(),
+          onSuccess: () => {},
+          onCancel: () => {
+            navigate("/order-confirmed/" + order.order_number, {
+              state: { order, paymentPending: true },
+              replace: true,
+            });
+          },
+        });
+      } catch (popupErr) {
+        if (popupErr?.message === "cancelled") {
+          navigate("/order-confirmed/" + order.order_number, {
+            state: { order, paymentPending: true },
+            replace: true,
+          });
+          return;
+        }
+      }
+
+      const paymentStatus = await pollPaymentUntilTerminal(paymentReference);
+      const isPaid = paymentStatus?.status === "successful" || paymentStatus?.status === "completed";
+
       navigate("/order-confirmed/" + order.order_number, {
-        state: { order },
+        state: { order, paymentPending: !isPaid, isPaid },
         replace: true,
       });
     } catch (err) {
@@ -423,7 +455,7 @@ export default function Checkout() {
                     Payment
                   </h2>
                   <p className="mt-1 text-body-md text-text-muted">
-                    Payment integration coming soon.
+                    Pay securely via Paystack. You will be redirected to complete payment.
                   </p>
                 </div>
                 <span className="material-symbols text-accent">lock</span>

@@ -43,7 +43,7 @@ class OrderItemInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
-        "order_number", "user", "status", "total",
+        "order_number", "user", "status", "is_paid", "total",
         "delivery_method", "created_at",
     )
     search_fields = ("order_number", "user__email", "full_name")
