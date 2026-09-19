@@ -138,6 +138,10 @@ class Product(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["seller", "sku"], name="unique_seller_sku"),
             models.UniqueConstraint(fields=["seller", "slug"], name="unique_seller_product_slug"),
+            models.CheckConstraint(
+                check=models.Q(stock_quantity__gte=0),
+                name="stock_quantity_non_negative",
+            ),
         ]
 
     def __str__(self):

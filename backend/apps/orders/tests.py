@@ -1,9 +1,10 @@
 """
-Comprehensive test suite for the NUVORA Cart API.
+Comprehensive test suite for the NUVORA Cart and Order API.
 
 Covers authentication, cart isolation, creation, add/update/remove/clear
-items, response structure, database constraints, URL routing, and
-security/trust boundaries.
+items, response structure, database constraints, URL routing,
+security/trust boundaries, order creation, historical snapshots, stock
+management, ownership, and transaction safety.
 
 NOTE: SQLite (the dev database) silently disables SELECT FOR UPDATE row
 locking. True concurrency/locking tests require PostgreSQL and are
@@ -21,8 +22,8 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.users.models import SellerProfile
-from apps.marketplace.models import Category, Product
-from .models import Cart, CartItem
+from apps.marketplace.models import Category, Product, ProductImage
+from .models import Cart, CartItem, Order, OrderItem
 
 
 User = get_user_model()
@@ -724,3 +725,816 @@ class CartSecurityTests(CartApiTestBase):
         self.assertEqual(response.json()["item_count"], 0)
         data = response.json()
         self.assertNotEqual(data.get("id"), other_cart.id)
+
+
+# ===========================================================================
+# ORDER TESTS
+# ===========================================================================
+
+
+class OrderTestBase(TestCase):
+    """Shared fixtures for order API tests."""
+
+    @classmethod
+    def setUpTestData(cls):
+        seller_user = User.objects.create_user(
+            email="seller@example.com", password="sellerpass123"
+        )
+        cls.seller = SellerProfile.objects.create(
+            user=seller_user,
+            store_name="Test Store",
+            store_slug="test-store",
+            status="active",
+        )
+        cls.category = Category.objects.create(
+            name="Electronics", slug="electronics", is_active=True
+        )
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(
+            email="buyer@example.com", password="buyerpass123"
+        )
+        self.other_user = User.objects.create_user(
+            email="other@example.com", password="otherpass123"
+        )
+        self.product = _make_product(
+            self.seller, self.category,
+            name="Widget", slug="widget", sku="SKU-001",
+            price="99.99", stock_quantity=10,
+        )
+        self.product_b = _make_product(
+            self.seller, self.category,
+            name="Gadget", slug="gadget", sku="SKU-002",
+            price="49.50", stock_quantity=5,
+        )
+
+    def _populate_cart(self, *products_and_quantities):
+        """Add items to the user's cart.  Each arg is (product, quantity)."""
+        cart = Cart.objects.create(user=self.user)
+        for product, qty in products_and_quantities:
+            CartItem.objects.create(cart=cart, product=product, quantity=qty)
+        return cart
+
+    def _create_order_payload(self, **overrides):
+        payload = {
+            "email": "buyer@example.com",
+            "full_name": "Jane Doe",
+            "phone_number": "+1234567890",
+            "shipping_address": "123 Main Street",
+            "shipping_city": "San Francisco",
+            "shipping_region": "CA",
+            "shipping_postal_code": "94103",
+            "shipping_country": "United States",
+            "delivery_method": "standard",
+            "delivery_description": "5-7 business days",
+        }
+        payload.update(overrides)
+        return payload
+
+
+# ---------------------------------------------------------------------------
+# 1. ORDER CREATION — AUTH (tests 1-2)
+# ---------------------------------------------------------------------------
+
+
+class OrderAuthTests(OrderTestBase):
+
+    def test_authenticated_user_can_create_order(self):
+        self._populate_cart((self.product, 2))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_unauthenticated_user_cannot_create_order(self):
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertIn(response.status_code, (401, 403))
+
+
+# ---------------------------------------------------------------------------
+# 2. ORDER CREATION — EMPTY CART (test 3)
+# ---------------------------------------------------------------------------
+
+
+class OrderEmptyCartTests(OrderTestBase):
+
+    def test_empty_cart_cannot_create_order(self):
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json()["code"], "empty_cart")
+
+    def test_no_cart_cannot_create_order(self):
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+# ---------------------------------------------------------------------------
+# 3. HISTORICAL PRICE SNAPSHOT (tests 4-7)
+# ---------------------------------------------------------------------------
+
+
+class OrderPriceSnapshotTests(OrderTestBase):
+
+    def test_order_item_preserves_price_at_purchase_time(self):
+        """Product is 99.99 when ordered; after price change, order still shows 99.99."""
+        self._populate_cart((self.product, 2))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Change product price
+        self.product.price = Decimal("349.00")
+        self.product.save()
+
+        # Verify order item still shows old price
+        order = Order.objects.get(order_number=response.json()["order_number"])
+        item = order.items.first()
+        self.assertEqual(item.unit_price, Decimal("99.99"))
+        self.assertEqual(item.line_total, Decimal("199.98"))
+
+    def test_order_total_not_affected_by_later_price_change(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.product.price = Decimal("999.99")
+        self.product.save()
+
+        order = Order.objects.get(order_number=response.json()["order_number"])
+        self.assertEqual(order.subtotal, Decimal("99.99"))
+        self.assertEqual(order.total, Decimal("99.99"))
+
+
+# ---------------------------------------------------------------------------
+# 4. QUANTITY & CALCULATION (tests 8-11)
+# ---------------------------------------------------------------------------
+
+
+class OrderCalculationTests(OrderTestBase):
+
+    def test_correct_quantity_copied_from_cart(self):
+        self._populate_cart((self.product, 4))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order = Order.objects.get(order_number=response.json()["order_number"])
+        item = order.items.first()
+        self.assertEqual(item.quantity, 4)
+
+    def test_line_total_is_correct(self):
+        self._populate_cart((self.product, 3))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order = Order.objects.get(order_number=response.json()["order_number"])
+        item = order.items.first()
+        self.assertEqual(item.line_total, Decimal("99.99") * 3)
+
+    def test_subtotal_is_correct(self):
+        self._populate_cart((self.product, 2), (self.product_b, 3))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order = Order.objects.get(order_number=response.json()["order_number"])
+        expected = Decimal("99.99") * 2 + Decimal("49.50") * 3
+        self.assertEqual(order.subtotal, expected)
+
+    def test_total_includes_shipping(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(delivery_method="express"),
+            format="json",
+        )
+        order = Order.objects.get(order_number=response.json()["order_number"])
+        self.assertEqual(order.shipping_cost, Decimal("25.00"))
+        self.assertEqual(order.total, Decimal("99.99") + Decimal("25.00"))
+
+    def test_standard_shipping_is_free(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(delivery_method="standard"),
+            format="json",
+        )
+        order = Order.objects.get(order_number=response.json()["order_number"])
+        self.assertEqual(order.shipping_cost, Decimal("0.00"))
+        self.assertEqual(order.total, order.subtotal)
+
+
+# ---------------------------------------------------------------------------
+# 5. STOCK MANAGEMENT (tests 12-15)
+# ---------------------------------------------------------------------------
+
+
+class OrderStockTests(OrderTestBase):
+
+    def test_stock_decreases_by_purchased_quantity(self):
+        self._populate_cart((self.product, 3))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.stock_quantity, 7)
+
+    def test_insufficient_stock_rejects_order(self):
+        self._populate_cart((self.product, 20))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json()["code"], "insufficient_stock")
+
+    def test_failed_stock_validation_leaves_cart_intact(self):
+        self._populate_cart((self.product, 20))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        cart = Cart.objects.get(user=self.user)
+        self.assertEqual(cart.items.count(), 1)
+        self.assertEqual(cart.items.first().quantity, 20)
+
+    def test_failed_stock_does_not_decrement_other_products(self):
+        self._populate_cart((self.product, 20), (self.product_b, 1))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.product_b.refresh_from_db()
+        self.assertEqual(self.product_b.stock_quantity, 5)
+
+
+# ---------------------------------------------------------------------------
+# 6. CART CLEARING (tests 16-17)
+# ---------------------------------------------------------------------------
+
+
+class OrderCartClearingTests(OrderTestBase):
+
+    def test_cart_empty_after_successful_order(self):
+        self._populate_cart((self.product, 2))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertFalse(CartItem.objects.filter(cart__user=self.user).exists())
+
+    def test_cart_intact_after_failed_order(self):
+        self._populate_cart((self.product, 20))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertTrue(CartItem.objects.filter(cart__user=self.user).exists())
+
+
+# ---------------------------------------------------------------------------
+# 7. OWNERSHIP — LIST & DETAIL (tests 18-20)
+# ---------------------------------------------------------------------------
+
+
+class OrderOwnershipTests(OrderTestBase):
+
+    def test_user_can_list_only_own_orders(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+
+        other_cart = Cart.objects.create(user=self.other_user)
+        CartItem.objects.create(cart=other_cart, product=self.product, quantity=2)
+        self.client.force_authenticate(self.other_user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(email="other@example.com", full_name="Bob"),
+            format="json",
+        )
+
+        self.client.force_authenticate(self.user)
+        response = self.client.get(reverse("order-list-create"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        orders = response.json()
+        self.assertEqual(len(orders), 1)
+
+    def test_user_can_retrieve_own_order(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        create_response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order_number = create_response.json()["order_number"]
+
+        response = self.client.get(
+            reverse("order-detail", kwargs={"order_number": order_number})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["order_number"], order_number)
+
+    def test_user_cannot_retrieve_other_user_order(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        create_response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order_number = create_response.json()["order_number"]
+
+        self.client.force_authenticate(self.other_user)
+        response = self.client.get(
+            reverse("order-detail", kwargs={"order_number": order_number})
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+# ---------------------------------------------------------------------------
+# 8. SNAPSHOTS — PRODUCT CHANGES / DELETION (tests 21-22)
+# ---------------------------------------------------------------------------
+
+
+class OrderSnapshotTests(OrderTestBase):
+
+    def test_renaming_product_does_not_change_order_item_name(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.product.name = "Renamed Widget"
+        self.product.save()
+
+        order = Order.objects.get(order_number=response.json()["order_number"])
+        item = order.items.first()
+        self.assertEqual(item.product_name, "Widget")
+
+    def test_deleting_product_preserves_order_item_snapshot(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+
+        order_id = response.json()["id"]
+        product_id = self.product.id
+        self.product.delete()
+
+        order = Order.objects.get(id=order_id)
+        item = order.items.first()
+        self.assertIsNone(item.product)
+        self.assertEqual(item.product_name, "Widget")
+        self.assertEqual(item.unit_price, Decimal("99.99"))
+
+    def test_product_image_snapshot_is_captured(self):
+        ProductImage.objects.create(
+            product=self.product,
+            image="products/widget.jpg",
+            is_primary=True,
+        )
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order = Order.objects.get(order_number=response.json()["order_number"])
+        item = order.items.first()
+        self.assertIn("widget.jpg", item.product_image)
+
+    def test_no_image_results_in_blank_snapshot(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order = Order.objects.get(order_number=response.json()["order_number"])
+        item = order.items.first()
+        self.assertEqual(item.product_image, "")
+
+
+# ---------------------------------------------------------------------------
+# 9. ORDER NUMBER (test 23)
+# ---------------------------------------------------------------------------
+
+
+class OrderNumberTests(OrderTestBase):
+
+    def test_every_order_has_unique_number(self):
+        numbers = set()
+        for i in range(5):
+            user = User.objects.create_user(
+                email=f"user{i}@example.com", password="pass123"
+            )
+            cart = Cart.objects.create(user=user)
+            CartItem.objects.create(cart=cart, product=self.product, quantity=1)
+
+            self.client.force_authenticate(user)
+            response = self.client.post(
+                reverse("order-list-create"),
+                self._create_order_payload(email=f"user{i}@example.com"),
+                format="json",
+            )
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            order_num = response.json()["order_number"]
+            self.assertNotIn(order_num, numbers)
+            numbers.add(order_num)
+
+    def test_order_number_format(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order_num = response.json()["order_number"]
+        self.assertRegex(order_num, r"^NUV-\w{4}-\w{2}$")
+
+
+# ---------------------------------------------------------------------------
+# 10. TRANSACTION SAFETY (test 24)
+# ---------------------------------------------------------------------------
+
+
+class OrderTransactionTests(OrderTestBase):
+
+    def test_stock_not_decremented_on_failure(self):
+        """If one item fails validation, no stock should be decremented."""
+        self._populate_cart((self.product, 20), (self.product_b, 1))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.product.refresh_from_db()
+        self.product_b.refresh_from_db()
+        self.assertEqual(self.product.stock_quantity, 10)
+        self.assertEqual(self.product_b.stock_quantity, 5)
+
+    def test_order_not_created_on_stock_failure(self):
+        self._populate_cart((self.product, 20))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertEqual(Order.objects.filter(user=self.user).count(), 0)
+
+
+# ---------------------------------------------------------------------------
+# 11. ORDER RESPONSE STRUCTURE
+# ---------------------------------------------------------------------------
+
+
+class OrderResponseStructureTests(OrderTestBase):
+
+    def test_order_list_response_fields(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        response = self.client.get(reverse("order-list-create"))
+        order = response.json()[0]
+        for field in ("id", "order_number", "status", "total", "item_count", "created_at"):
+            self.assertIn(field, order)
+
+    def test_order_detail_response_fields(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        create_response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order_number = create_response.json()["order_number"]
+        response = self.client.get(
+            reverse("order-detail", kwargs={"order_number": order_number})
+        )
+        data = response.json()
+        for field in (
+            "id", "order_number", "status", "email", "full_name",
+            "shipping_address", "shipping_city", "subtotal", "total",
+            "items", "item_count", "created_at",
+        ):
+            self.assertIn(field, data)
+        self.assertEqual(len(data["items"]), 1)
+
+    def test_order_item_snapshot_fields(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        create_response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order_number = create_response.json()["order_number"]
+        response = self.client.get(
+            reverse("order-detail", kwargs={"order_number": order_number})
+        )
+        item = response.json()["items"][0]
+        for field in ("id", "product", "product_name", "product_image", "unit_price", "quantity", "line_total"):
+            self.assertIn(field, item)
+
+    def test_money_values_serialized_as_strings(self):
+        self._populate_cart((self.product, 2))
+        self.client.force_authenticate(self.user)
+        create_response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order_number = create_response.json()["order_number"]
+        response = self.client.get(
+            reverse("order-detail", kwargs={"order_number": order_number})
+        )
+        data = response.json()
+        self.assertIsInstance(data["subtotal"], str)
+        self.assertIsInstance(data["total"], str)
+        self.assertIsInstance(data["items"][0]["unit_price"], str)
+        self.assertIsInstance(data["items"][0]["line_total"], str)
+
+
+# ===========================================================================
+# PHASE 7D — STOCK & INTEGRITY HARDENING TESTS
+# ===========================================================================
+
+
+class StockConstraintTests(TestCase):
+    """Verify the database-level stock_quantity_non_negative constraint."""
+
+    @classmethod
+    def setUpTestData(cls):
+        seller_user = User.objects.create_user(
+            email="seller@example.com", password="sellerpass123"
+        )
+        cls.seller = SellerProfile.objects.create(
+            user=seller_user,
+            store_name="Test Store",
+            store_slug="test-store",
+            status="active",
+        )
+        cls.category = Category.objects.create(
+            name="Electronics", slug="electronics", is_active=True
+        )
+
+    def test_product_can_have_zero_stock(self):
+        product = _make_product(
+            self.seller, self.category,
+            name="Zero Stock", slug="zero-stock", sku="SKU-ZERO",
+            price="10.00", stock_quantity=0,
+        )
+        product.refresh_from_db()
+        self.assertEqual(product.stock_quantity, 0)
+
+    def test_product_cannot_be_saved_with_negative_stock(self):
+        product = _make_product(
+            self.seller, self.category,
+            name="Neg Stock", slug="neg-stock", sku="SKU-NEG",
+            price="10.00", stock_quantity=5,
+        )
+        product.stock_quantity = -1
+        with self.assertRaises(IntegrityError):
+            product.save(update_fields=["stock_quantity"])
+
+
+class StockDecrementTests(OrderTestBase):
+    """Verify stock is correctly decremented after successful order."""
+
+    def test_stock_decremented_by_exact_quantity(self):
+        self._populate_cart((self.product, 2))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.stock_quantity, 8)  # 10 - 2
+
+    def test_exact_stock_succeeds(self):
+        """Ordering all available stock should succeed and leave stock at 0."""
+        self.product.stock_quantity = 2
+        self.product.save(update_fields=["stock_quantity"])
+        self._populate_cart((self.product, 2))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.stock_quantity, 0)
+
+    def test_insufficient_stock_fails_cleanly(self):
+        self.product.stock_quantity = 2
+        self.product.save(update_fields=["stock_quantity"])
+        self._populate_cart((self.product, 3))
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json()["code"], "insufficient_stock")
+        # Stock unchanged
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.stock_quantity, 2)
+        # No order created
+        self.assertEqual(Order.objects.filter(user=self.user).count(), 0)
+        # Cart intact
+        self.assertTrue(CartItem.objects.filter(cart__user=self.user).exists())
+
+
+class ProductUnavailableTests(OrderTestBase):
+    """Verify checkout fails cleanly when a product becomes unavailable."""
+
+    def test_inactive_product_rejects_order(self):
+        self._populate_cart((self.product, 1))
+        self.product.status = "inactive"
+        self.product.save(update_fields=["status"])
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json()["code"], "product_unavailable")
+        self.assertEqual(Order.objects.filter(user=self.user).count(), 0)
+        self.assertTrue(CartItem.objects.filter(cart__user=self.user).exists())
+        # Stock unchanged
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.stock_quantity, 10)
+
+    def test_unapproved_product_rejects_order(self):
+        self._populate_cart((self.product, 1))
+        self.product.approval_status = "pending"
+        self.product.save(update_fields=["approval_status"])
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json()["code"], "product_unavailable")
+
+    def test_invisible_product_rejects_order(self):
+        self._populate_cart((self.product, 1))
+        self.product.is_visible = False
+        self.product.save(update_fields=["is_visible"])
+        self.client.force_authenticate(self.user)
+        response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json()["code"], "product_unavailable")
+
+
+class TransactionRollbackTests(OrderTestBase):
+    """Verify no partial state is left behind when order creation fails."""
+
+    def test_no_partial_order_on_stock_failure(self):
+        """Second item fails stock check — first item's stock must not be decremented."""
+        self._populate_cart((self.product, 2), (self.product_b, 20))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        # Neither product should have altered stock
+        self.product.refresh_from_db()
+        self.product_b.refresh_from_db()
+        self.assertEqual(self.product.stock_quantity, 10)
+        self.assertEqual(self.product_b.stock_quantity, 5)
+        # No order or order items created
+        self.assertEqual(Order.objects.filter(user=self.user).count(), 0)
+        self.assertEqual(OrderItem.objects.count(), 0)
+        # Cart untouched
+        self.assertEqual(CartItem.objects.filter(cart__user=self.user).count(), 2)
+
+    def test_no_partial_order_on_availability_failure(self):
+        """Product becomes unavailable mid-cart — everything rolls back."""
+        self._populate_cart((self.product, 1), (self.product_b, 1))
+        # Make second product unavailable
+        self.product_b.status = "inactive"
+        self.product_b.save(update_fields=["status"])
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        # First product stock unchanged
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.stock_quantity, 10)
+        # No order created
+        self.assertEqual(Order.objects.filter(user=self.user).count(), 0)
+        # Cart intact
+        self.assertEqual(CartItem.objects.filter(cart__user=self.user).count(), 2)
+
+
+class OwnershipRegressionTests(OrderTestBase):
+    """Verify order ownership isolation remains intact."""
+
+    def test_user_b_cannot_list_user_a_orders(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        # User B sees empty list
+        self.client.force_authenticate(self.other_user)
+        response = self.client.get(reverse("order-list-create"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 0)
+
+    def test_user_b_cannot_retrieve_user_a_order(self):
+        self._populate_cart((self.product, 1))
+        self.client.force_authenticate(self.user)
+        create_response = self.client.post(
+            reverse("order-list-create"),
+            self._create_order_payload(),
+            format="json",
+        )
+        order_number = create_response.json()["order_number"]
+        # User B tries to access
+        self.client.force_authenticate(self.other_user)
+        response = self.client.get(
+            reverse("order-detail", kwargs={"order_number": order_number})
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

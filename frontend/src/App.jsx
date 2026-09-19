@@ -8,6 +8,8 @@ import ProductDetails from "./pages/ProductDetails.jsx";
 import Cart from "./pages/Cart.jsx";
 import Checkout from "./pages/Checkout.jsx";
 import OrderConfirmed from "./pages/OrderConfirmed.jsx";
+import Orders from "./pages/Orders.jsx";
+import OrderDetail from "./pages/OrderDetail.jsx";
 import TrackOrder from "./pages/TrackOrder.jsx";
 import OurStory from "./pages/OurStory.jsx";
 import FAQ from "./pages/FAQ.jsx";
@@ -67,7 +69,7 @@ export default function App() {
         <Route path="/product/:productId" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-        <Route path="/order-confirmed" element={<OrderConfirmed />} />
+        <Route path="/order-confirmed/:orderNumber" element={<ProtectedRoute><OrderConfirmed /></ProtectedRoute>} />
         <Route path="/track-order" element={<TrackOrder />} />
         <Route path="/our-story" element={<OurStory />} />
         <Route path="/faq" element={<FAQ />} />
@@ -86,8 +88,8 @@ export default function App() {
       <Route path="/welcome" element={<WelcomeToDiscovery />} />
       <Route path="/customer" element={<ProtectedRoute><CustomerLayout /></ProtectedRoute>}>
         <Route index element={<CustomerHub />} />
-        <Route path="orders" element={<CustomerOrders />} />
-        <Route path="orders/:orderId" element={<CustomerOrderDetails />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="orders/:orderNumber" element={<OrderDetail />} />
         <Route path="wishlist" element={<CustomerWishlist />} />
         <Route path="notifications" element={<CustomerNotifications />} />
         <Route path="settings" element={<CustomerSettings />} />

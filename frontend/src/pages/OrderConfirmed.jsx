@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, Navigate } from "react-router-dom";
+import { Link, useParams, Navigate } from "react-router-dom";
 import Button from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
 import Badge from "../components/ui/Badge.jsx";
-import { getLastOrder, formatDateRange, formatOrderDate } from "../lib/order.js";
+import { getOrder } from "../services/api/order.js";
+
+function formatOrderDate(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+function formatMoney(value) {
+  const num = Number(value);
+  if (isNaN(num)) return "$0.00";
+  return `$${num.toFixed(2)}`;
+}
 
 function SuccessIcon() {
   return (
@@ -52,13 +67,13 @@ function OrderSummary({ order }) {
       </div>
 
       <div className="mt-6 space-y-4">
-        {order.items.map((item) => (
-          <div key={item.id} className="flex items-start gap-4">
+        {order.items.map((item, index) => (
+          <div key={item.id || index} className="flex items-start gap-4">
             <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-deep-surface">
-              {item.image ? (
+              {item.product_image ? (
                 <img
-                  src={item.image}
-                  alt={item.name}
+                  src={item.product_image}
+                  alt={item.product_name}
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -68,10 +83,14 @@ function OrderSummary({ order }) {
               )}
             </div>
             <div className="flex-1">
-              <h3 className="font-label-sm text-label-sm text-text-primary">{item.name}</h3>
-              <p className="mt-1 text-body-md text-text-muted">Qty: {item.quantity}</p>
+              <h3 className="font-label-sm text-label-sm text-text-primary">
+                {item.product_name}
+              </h3>
+              <p className="mt-1 text-body-md text-text-muted">
+                Qty: {item.quantity}
+              </p>
               <p className="mt-1 font-semibold text-text-primary">
-                ${(item.price * item.quantity).toFixed(2)}
+                {formatMoney(item.line_total)}
               </p>
             </div>
           </div>
@@ -81,26 +100,33 @@ function OrderSummary({ order }) {
       <div className="mt-6 space-y-3">
         <div className="flex justify-between text-body-md text-text-muted">
           <span>Subtotal</span>
-          <span className="text-text-primary">${order.subtotal.toFixed(2)}</span>
+          <span className="text-text-primary">{formatMoney(order.subtotal)}</span>
         </div>
         <div className="flex justify-between text-body-md text-text-muted">
           <span>Shipping</span>
           <span className="text-text-primary">
-            {order.shipping === 0 ? "Complimentary" : `$${order.shipping.toFixed(2)}`}
+            {Number(order.shipping_cost) === 0
+              ? "Complimentary"
+              : formatMoney(order.shipping_cost)}
           </span>
         </div>
+        {Number(order.discount) > 0 && (
+          <div className="flex justify-between text-body-md text-text-muted">
+            <span>Discount</span>
+            <span className="text-accent">-{formatMoney(order.discount)}</span>
+          </div>
+        )}
       </div>
 
       <div className="mt-6 flex items-center justify-between border-t border-outline-variant/20 pt-4">
         <span className="font-h4 text-h4 text-text-primary">Total</span>
-        <span className="font-h3 text-h3 text-accent">${order.total.toFixed(2)}</span>
+        <span className="font-h3 text-h3 text-accent">{formatMoney(order.total)}</span>
       </div>
     </Card>
   );
 }
 
 function ShippingCard({ order }) {
-  const { shippingAddress, delivery, estimatedDelivery } = order;
   return (
     <Card className="p-6 lg:p-8">
       <div className="flex items-center gap-2 border-b border-outline-variant/20 pb-4">
@@ -112,22 +138,22 @@ function ShippingCard({ order }) {
           <p className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">
             Ship To
           </p>
-          <p className="mt-2 font-semibold text-text-primary">{shippingAddress.fullName}</p>
-          <p className="mt-1 text-body-md text-text-muted">{shippingAddress.address}</p>
+          <p className="mt-2 font-semibold text-text-primary">{order.full_name}</p>
+          <p className="mt-1 text-body-md text-text-muted">{order.shipping_address}</p>
           <p className="text-body-md text-text-muted">
-            {shippingAddress.city}, {shippingAddress.region} {shippingAddress.postalCode}
+            {order.shipping_city}, {order.shipping_region} {order.shipping_postal_code}
           </p>
-          <p className="text-body-md text-text-muted">{shippingAddress.country}</p>
+          <p className="text-body-md text-text-muted">{order.shipping_country}</p>
         </div>
         <div>
           <p className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">
             Method
           </p>
-          <p className="mt-2 font-semibold text-text-primary">{delivery.label}</p>
-          <p className="mt-1 text-body-md text-text-muted">{delivery.description}</p>
-          <p className="mt-3 flex items-center gap-2 text-body-md text-text-primary">
-            <span className="material-symbols text-[18px] text-accent">event</span>
-            {formatDateRange(estimatedDelivery.start, estimatedDelivery.end)}
+          <p className="mt-2 font-semibold text-text-primary">
+            {order.delivery_method === "express" ? "Express Delivery" : "Standard Delivery"}
+          </p>
+          <p className="mt-1 text-body-md text-text-muted">
+            {order.delivery_description || "5-7 business days"}
           </p>
         </div>
       </div>
@@ -136,17 +162,61 @@ function ShippingCard({ order }) {
 }
 
 export default function OrderConfirmed() {
-  const location = useLocation();
-  const [order] = useState(
-    () => location.state?.order ?? getLastOrder()
-  );
+  const { orderNumber } = useParams();
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
 
-  if (!order) {
-    return <Navigate to="/marketplace" replace />;
+    if (!orderNumber) {
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    getOrder(orderNumber)
+      .then((data) => {
+        if (!cancelled) {
+          setOrder(data);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err?.message || "Failed to load order details.");
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [orderNumber]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-6 py-20 text-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-lime border-t-transparent" />
+        <p className="text-body-lg text-text-muted">Loading your order...</p>
+      </div>
+    );
+  }
+
+  if (error || !order) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-6 py-20 text-center">
+        <span className="material-symbols text-5xl text-text-muted">receipt_long</span>
+        <p className="text-body-lg text-text-muted">
+          {error || "Order not found."}
+        </p>
+        <Link to="/marketplace">
+          <Button>Continue Shopping</Button>
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -181,18 +251,18 @@ export default function OrderConfirmed() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <OrderMeta
               label="Order Reference"
-              value={`#${order.orderNumber}`}
+              value={`#${order.order_number}`}
               icon="receipt_long"
             />
             <OrderMeta
               label="Order Date"
-              value={formatOrderDate(order.placedAt)}
+              value={formatOrderDate(order.created_at)}
               icon="calendar_month"
             />
             <OrderMeta
-              label="Est. Arrival"
-              value={formatDateRange(order.estimatedDelivery.start, order.estimatedDelivery.end)}
-              icon="flight_land"
+              label="Status"
+              value={order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+              icon="info"
             />
           </div>
         </div>
@@ -204,7 +274,7 @@ export default function OrderConfirmed() {
 
           <p className="flex items-center justify-center gap-2 text-body-md text-text-muted">
             <span className="material-symbols text-[18px] text-accent">lock</span>
-            A confirmation has been sent to {order.shippingAddress.email || "your email"}.
+            A confirmation has been sent to {order.email || "your email"}.
           </p>
         </div>
 
@@ -213,10 +283,10 @@ export default function OrderConfirmed() {
           className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-center fade-rise"
           style={{ animationDelay: "0.6s" }}
         >
-          <Link to="/track-order" className="w-full sm:w-auto">
+          <Link to={`/customer/orders/${order.order_number}`} className="w-full sm:w-auto">
             <Button size="lg" className="w-full px-8 py-4">
-              <span className="material-symbols text-[18px]">track_changes</span>
-              Track Order
+              <span className="material-symbols text-[18px]">receipt_long</span>
+              View Order Details
             </Button>
           </Link>
           <Link to="/marketplace" className="w-full sm:w-auto">

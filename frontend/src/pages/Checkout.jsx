@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
 import Button from "../components/ui/Button.jsx";
-import { buildOrder, saveLastOrder } from "../lib/order.js";
+import { createOrder } from "../services/api/order.js";
 
 const DELIVERY_OPTIONS = [
   {
@@ -73,10 +73,6 @@ function CheckoutSummary({ subtotal, shipping, total, items }) {
             {shipping === 0 ? "Complimentary" : `$${shipping.toFixed(2)}`}
           </span>
         </div>
-        <div className="flex justify-between text-body-md text-text-muted">
-          <span>Estimated Tax</span>
-          <span className="text-text-primary">Calculated at checkout</span>
-        </div>
       </div>
 
       <div className="mt-6 flex justify-between items-center border-t border-outline-variant/20 pt-4">
@@ -98,10 +94,12 @@ function CheckoutSummary({ subtotal, shipping, total, items }) {
 }
 
 export default function Checkout() {
-  const { items, subtotal, clear, loading } = useCart();
+  const { items, subtotal, loading, refresh } = useCart();
   const navigate = useNavigate();
-  const [deliveryId, setDeliveryId] = useState("express");
+  const [deliveryId, setDeliveryId] = useState("standard");
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [orderError, setOrderError] = useState(null);
   const [form, setForm] = useState({
     email: "",
     phone: "",
@@ -111,11 +109,6 @@ export default function Checkout() {
     region: "",
     postalCode: "",
     country: "",
-    cardNumber: "",
-    expiry: "",
-    cvc: "",
-    cardholderName: "",
-    sameAddress: true,
   });
 
   const shipping = DELIVERY_OPTIONS.find((o) => o.id === deliveryId)?.price ?? 0;
@@ -145,36 +138,62 @@ export default function Checkout() {
     if (!form.region.trim()) next.region = "State/Region is required";
     if (!form.postalCode.trim()) next.postalCode = "Postal code is required";
     if (!form.country.trim()) next.country = "Country is required";
-    if (!form.cardNumber.trim()) next.cardNumber = "Card number is required";
-    else if (!/^\d{4} ?\d{4} ?\d{4} ?\d{4}$/.test(form.cardNumber.replace(/\s/g, "")))
-      next.cardNumber = "Enter a valid 16-digit card number";
-    if (!form.expiry.trim()) next.expiry = "Expiry is required";
-    else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(form.expiry))
-      next.expiry = "Use MM/YY format";
-    if (!form.cvc.trim()) next.cvc = "CVC is required";
-    else if (!/^\d{3,4}$/.test(form.cvc)) next.cvc = "Enter a valid CVC";
-    if (!form.cardholderName.trim())
-      next.cardholderName = "Cardholder name is required";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!validate()) return;
+    if (!validate() || submitting) return;
+
+    setSubmitting(true);
+    setOrderError(null);
+
     const delivery = DELIVERY_OPTIONS.find((o) => o.id === deliveryId);
-    const order = buildOrder({
-      items,
-      subtotal,
-      shipping,
-      total,
-      deliveryId,
-      delivery,
-      form,
-    });
-    saveLastOrder(order);
-    clear();
-    navigate("/order-confirmed", { state: { order } });
+
+    try {
+      const order = await createOrder({
+        email: form.email.trim(),
+        fullName: form.fullName.trim(),
+        phoneNumber: form.phone.trim(),
+        shippingAddress: form.address.trim(),
+        shippingCity: form.city.trim(),
+        shippingRegion: form.region.trim(),
+        shippingPostalCode: form.postalCode.trim(),
+        shippingCountry: form.country.trim(),
+        deliveryMethod: deliveryId,
+        deliveryDescription: delivery?.description || "",
+      });
+
+      await refresh();
+      navigate("/order-confirmed/" + order.order_number, {
+        state: { order },
+        replace: true,
+      });
+    } catch (err) {
+      const code = err?.data?.code;
+      if (code === "empty_cart") {
+        setOrderError("Your cart is empty. Please add items before checking out.");
+      } else if (code === "product_unavailable") {
+        setOrderError(
+          err?.data?.detail ||
+            "One or more items in your cart are no longer available."
+        );
+      } else if (code === "insufficient_stock") {
+        setOrderError(
+          err?.data?.detail ||
+            "Stock has changed for one or more items. Please review your cart."
+        );
+      } else if (err?.status === 401) {
+        setOrderError("Your session has expired. Please log in again.");
+      } else {
+        setOrderError(
+          err?.message || "Something went wrong. Please try again."
+        );
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const update = (field) => (event) => {
@@ -184,6 +203,7 @@ export default function Checkout() {
       delete next[field];
       return next;
     });
+    setOrderError(null);
   };
 
   return (
@@ -207,6 +227,15 @@ export default function Checkout() {
             </span>
           </div>
 
+          {orderError && (
+            <div className="rounded-xl border border-red-400/30 bg-red-400/5 p-4 flex items-start gap-3">
+              <span className="material-symbols mt-0.5 text-[20px] text-red-400">
+                error
+              </span>
+              <p className="text-body-md text-red-400">{orderError}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-10">
             <section className="rounded-2xl border border-outline-variant/20 bg-surface p-6 shadow-sm lg:p-8 space-y-6">
               <div>
@@ -228,6 +257,7 @@ export default function Checkout() {
                     placeholder="you@example.com"
                     className="mt-2 w-full rounded-xl border border-outline-variant/30 bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
                     type="email"
+                    disabled={submitting}
                   />
                   <FieldError message={errors.email} />
                 </div>
@@ -241,6 +271,7 @@ export default function Checkout() {
                     placeholder="+1 (555) 000-0000"
                     className="mt-2 w-full rounded-xl border border-outline-variant/30 bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
                     type="tel"
+                    disabled={submitting}
                   />
                 </div>
               </div>
@@ -265,6 +296,7 @@ export default function Checkout() {
                     onChange={update("fullName")}
                     placeholder="Jane Doe"
                     className="mt-2 w-full rounded-xl border border-outline-variant/30 bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
+                    disabled={submitting}
                   />
                   <FieldError message={errors.fullName} />
                 </div>
@@ -277,6 +309,7 @@ export default function Checkout() {
                     onChange={update("address")}
                     placeholder="123 Main Street, Apt 4B"
                     className="mt-2 w-full rounded-xl border border-outline-variant/30 bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
+                    disabled={submitting}
                   />
                   <FieldError message={errors.address} />
                 </div>
@@ -290,6 +323,7 @@ export default function Checkout() {
                       onChange={update("city")}
                       placeholder="San Francisco"
                       className="mt-2 w-full rounded-xl border border-outline-variant/30 bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
+                      disabled={submitting}
                     />
                     <FieldError message={errors.city} />
                   </div>
@@ -302,6 +336,7 @@ export default function Checkout() {
                       onChange={update("region")}
                       placeholder="CA"
                       className="mt-2 w-full rounded-xl border border-outline-variant/30 bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
+                      disabled={submitting}
                     />
                     <FieldError message={errors.region} />
                   </div>
@@ -316,6 +351,7 @@ export default function Checkout() {
                       onChange={update("postalCode")}
                       placeholder="94103"
                       className="mt-2 w-full rounded-xl border border-outline-variant/30 bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
+                      disabled={submitting}
                     />
                     <FieldError message={errors.postalCode} />
                   </div>
@@ -328,6 +364,7 @@ export default function Checkout() {
                       onChange={update("country")}
                       placeholder="United States"
                       className="mt-2 w-full rounded-xl border border-outline-variant/30 bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
+                      disabled={submitting}
                     />
                     <FieldError message={errors.country} />
                   </div>
@@ -360,6 +397,7 @@ export default function Checkout() {
                         checked={deliveryId === option.id}
                         onChange={() => setDeliveryId(option.id)}
                         className="h-4 w-4 border-outline-variant text-accent focus:ring-lime"
+                        disabled={submitting}
                       />
                       <div>
                         <p className="font-label-sm text-label-sm text-text-primary">
@@ -385,106 +423,10 @@ export default function Checkout() {
                     Payment
                   </h2>
                   <p className="mt-1 text-body-md text-text-muted">
-                    All transactions are secure and encrypted.
+                    Payment integration coming soon.
                   </p>
                 </div>
                 <span className="material-symbols text-accent">lock</span>
-              </div>
-
-              <div className="flex items-center gap-4 border-b border-outline-variant/20 pb-4">
-                <button
-                  type="button"
-                  className="flex items-center gap-2 border-b-2 border-lime pb-4 text-label-sm font-semibold text-text-primary -mb-[17px]"
-                >
-                  <span className="material-symbols text-lg">credit_card</span>
-                  Credit Card
-                </button>
-                <button
-                  type="button"
-                  className="flex items-center gap-2 pb-4 text-label-sm text-text-muted transition-colors hover:text-text-primary"
-                >
-                  <span className="material-symbols text-lg">account_balance_wallet</span>
-                  Digital Wallet
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <label className="font-label-sm text-label-sm text-text-primary block">
-                    Card Number
-                  </label>
-                  <div className="relative">
-                    <input
-                      value={form.cardNumber}
-                      onChange={update("cardNumber")}
-                      placeholder="0000 0000 0000 0000"
-                      className="w-full rounded-xl border border-outline-variant/30 bg-surface-low pl-10 pr-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
-                    />
-                    <span className="material-symbols absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
-                      credit_card
-                    </span>
-                  </div>
-                  <FieldError message={errors.cardNumber} />
-                </div>
-
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="font-label-sm text-label-sm text-text-primary block">
-                      Expiration Date
-                    </label>
-                    <input
-                      value={form.expiry}
-                      onChange={update("expiry")}
-                      placeholder="MM/YY"
-                      className="w-full rounded-xl border border-outline-variant/30 bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
-                    />
-                    <FieldError message={errors.expiry} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="font-label-sm text-label-sm text-text-primary block">
-                      CVC
-                    </label>
-                    <div className="relative">
-                      <input
-                        value={form.cvc}
-                        onChange={update("cvc")}
-                        placeholder="123"
-                        className="w-full rounded-xl border border-outline-variant/30 bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
-                      />
-                      <span className="material-symbols absolute right-3 top-1/2 -translate-y-1/2 text-text-muted cursor-help text-sm">
-                        help
-                      </span>
-                    </div>
-                    <FieldError message={errors.cvc} />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="font-label-sm text-label-sm text-text-primary block">
-                    Cardholder Name
-                  </label>
-                  <input
-                    value={form.cardholderName}
-                    onChange={update("cardholderName")}
-                    placeholder="Name on card"
-                    className="w-full rounded-xl border border-outline-variant/30 bg-surface-low px-4 py-3 font-body-md text-text-primary outline-none transition-all placeholder:text-text-muted/60 focus:border-lime"
-                  />
-                  <FieldError message={errors.cardholderName} />
-                </div>
-
-                <label className="flex items-start gap-3 pt-2">
-                  <input
-                    type="checkbox"
-                    checked={form.sameAddress}
-                    onChange={(event) =>
-                      setForm((prev) => ({ ...prev, sameAddress: event.target.checked }))
-                    }
-                    className="mt-1 h-4 w-4 rounded border-outline-variant text-accent focus:ring-lime"
-                  />
-                  <span className="text-body-md text-text-muted">
-                    Billing address is same as delivery address
-                  </span>
-                </label>
               </div>
             </section>
 
@@ -496,9 +438,22 @@ export default function Checkout() {
                 <span className="material-symbols text-[18px]">arrow_back</span>
                 Return to Cart
               </Link>
-              <Button type="submit" className="w-full sm:w-auto px-8 py-4" disabled={loading}>
-                <span className="material-symbols text-[18px]">lock</span>
-                Place Order
+              <Button
+                type="submit"
+                className="w-full sm:w-auto px-8 py-4"
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-obsidian border-t-transparent" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols text-[18px]">lock</span>
+                    Place Order
+                  </>
+                )}
               </Button>
             </div>
           </form>

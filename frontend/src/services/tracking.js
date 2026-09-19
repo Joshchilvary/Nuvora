@@ -1,4 +1,4 @@
-import { getLastOrder, formatDateRange, estimateDelivery } from "../lib/order.js";
+import { formatDateRange, estimateDelivery } from "../lib/order.js";
 import { PRODUCTS } from "../data/products.js";
 
 export const TRACKING_STAGES = [
@@ -48,7 +48,7 @@ function buildDemoOrder() {
 }
 
 export function resolveTrackingOrder() {
-  return getLastOrder() ?? buildDemoOrder();
+  return buildDemoOrder();
 }
 
 export function getTracking(order) {
